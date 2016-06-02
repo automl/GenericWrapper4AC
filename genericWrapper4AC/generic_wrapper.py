@@ -13,6 +13,8 @@ abstract methods for generation of callstring and parsing of solver output
 @warning:  use "--" after the last additional argument of the wrapper to deactivate prefix matching! 
 '''
 
+import genericWrapper4AC
+
 import sys
 import os
 import signal
@@ -118,7 +120,7 @@ class AbstractWrapper(object):
 
             # Setup argument parser
             
-            self.parser.add_argument("--runsolver-path", dest="runsolver", default="./scripts/runsolver", help="path to runsolver binary (if None, the runsolver is deactivated)")
+            self.parser.add_argument("--runsolver-path", dest="runsolver", default=os.path.join(genericWrapper4AC.__path__[0],"binaries","runsolver"), help="path to runsolver binary (if None, the runsolver is deactivated)")
             self.parser.add_argument("--temp-file-dir", dest="tmp_dir", default=".", help="directory for temporary files (relative to -exec-dir in SMAC scenario)")
             self.parser.add_argument("--temp-file-dir-algo", dest="tmp_dir_algo", default=True, type=bool, help="create a directory for temporary files from target algo") #TODO: set default to False
             self.parser.add_argument("--mem-limit", dest="mem_limit", default=self._mem_limit, type=int, help="memory limit in MB")
@@ -126,7 +128,7 @@ class AbstractWrapper(object):
             self.parser.add_argument("--log", dest="log", default=False, type=bool, help="logs all runs in \"target_algo_runs.csv\" in --temp-file-dir")
             self.parser.add_argument("--ext-callstring", dest="ext_callstring", default=None, help="Command to get call string via external program;" +
                                                                                              "your programm gets a file with"+
-                                                                                             "first line: instance name,"+
+                                                                                             "first line: instance name," + 
                                                                                              "second line: seed"+
                                                                                              "further lines: paramter name, paramater value;"+ 
                                                                                              "output: one line with callstring for target algorithm")

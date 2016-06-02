@@ -17,7 +17,7 @@ import sys
 import re
 import math
 
-from genericWrapper import AbstractWrapper
+from genericWrapper4AC.generic_wrapper import AbstractWrapper
 
 class AbstractBlackBoxWrapper(AbstractWrapper):
     '''
