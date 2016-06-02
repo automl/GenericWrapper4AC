@@ -288,11 +288,11 @@ class AbstractWrapper(object):
             if self._runsolver != "None":
                 if "\"" in runsolver_cmd: # if there are quotes in the call, we cannot split it individual list elements. we have to call it via shell as a string; problematic solver: SparrowToRiss
                     runsolver_cmd = " ".join(map(str, runsolver_cmd))
-                    io = Popen(runsolver_cmd, shell=True, preexec_fn=os.setpgrp)
+                    io = Popen(runsolver_cmd, shell=True, preexec_fn=os.setpgrp, universal_newlines=True)
                 else:
-                    io = Popen(map(str, runsolver_cmd), shell=False, preexec_fn=os.setpgrp)
+                    io = Popen(map(str, runsolver_cmd), shell=False, preexec_fn=os.setpgrp, universal_newlines=True)
             else:
-                io = Popen(map(str, runsolver_cmd), stdout=self._solver_file, shell=False, preexec_fn=os.setpgrp)
+                io = Popen(map(str, runsolver_cmd), stdout=self._solver_file, shell=False, preexec_fn=os.setpgrp, universal_newlines=True)
             self._subprocesses.append(io)
             io.wait()
             self._subprocesses.remove(io)
@@ -320,7 +320,7 @@ class AbstractWrapper(object):
             return
         
         self.print_d("Reading runsolver output from %s" % (self._watcher_file.name))
-        data = self._watcher_file.read()
+        data = str(self._watcher_file.read())
 
         if (re.search('runsolver_max_cpu_time_exceeded', data) or re.search('Maximum CPU time exceeded', data)):
             self._ta_status = "TIMEOUT"
@@ -375,7 +375,7 @@ class AbstractWrapper(object):
             try:
                 for sub in self._subprocesses:
                     #sub.terminate()
-                    Popen(["pkill","-TERM", "-P",str(sub.pid)])
+                    Popen(["pkill","-TERM", "-P",str(sub.pid)], universal_newlines=True)
                     self.print_d("Wait %d seconds ..." % (self._DELAY2KILL))
                     time.sleep(self._DELAY2KILL)
                     if sub.returncode is None: # still running
@@ -457,7 +457,7 @@ class AbstractWrapper(object):
         cmd.append(callstring_in.name)
         self.print_d(" ".join(cmd))
         try:
-            io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE)
+            io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE, universal_newlines=True)
             self._subprocesses.append(io)
             out_, _ = io.communicate()
             self._subprocesses.remove(io)
@@ -512,7 +512,7 @@ class AbstractWrapper(object):
         cmd.append(filepointer.name)
         self.print_d(" ".join(cmd))
         try:
-            io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE)
+            io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE, universal_newlines=True)
             self._subprocesses.append(io)
             out_, _ = io.communicate()
             self._subprocesses.remove(io)
@@ -591,7 +591,7 @@ class OArgumentParser(object):
         iterator_args = iter(args)
         while True:
             try:
-                name = iterator_args.next()
+                name = next(iterator_args)
             except StopIteration:
                 break
         #for name, value in zip(args[::2], args[1::2]):
@@ -599,7 +599,7 @@ class OArgumentParser(object):
             #    self.print_help()
             if self.options.get(name):
                 try:
-                    value = iterator_args.next()
+                    value = next(iterator_args)
                 except StopIteration:
                     sys.stderr.write("%s is missing some value\n" %(name))
                     sys.exit(2)

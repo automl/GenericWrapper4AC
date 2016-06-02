@@ -42,7 +42,7 @@ class SatCSSCWrapper(AbstractWrapper):
         self.__instance = ""
         self.__cmd = ""
         
-        self._FAILED_FILE = "failed_runs.txt" # in self._tmp_dir
+        self._FAILED_FILE = "failed_runs.txt"  # in self._tmp_dir
         
         self.inst_specific = None
         
@@ -102,29 +102,29 @@ class SatCSSCWrapper(AbstractWrapper):
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
         self.print_d("reading solver results from %s" % (filepointer.name))
-        data = filepointer.read()
+        data = str(filepointer.read())
         resultMap = {}
         
         if re.search('UNSATISFIABLE', data):
             resultMap['status'] = 'UNSAT'
             
-            #verify UNSAT via external knowledge
+            # verify UNSAT via external knowledge
             if self.inst_specific in ["SAT", "UNSAT"] and  self.inst_specific == "SAT":
                 resultMap['status'] = 'CRASHED'
                 resultMap['misc'] = "Instance is SAT but UNSAT was reported"
             elif not self.args.solubility_file:
                 resultMap['misc'] = "solubility file was not given; could not verify UNSAT" 
             elif not os.path.isfile(self.args.solubility_file):
-                resultMap['misc'] = "have not found %s; could not verify UNSAT" %(self.args.solubility_file)
+                resultMap['misc'] = "have not found %s; could not verify UNSAT" % (self.args.solubility_file)
             elif not self._verify_UNSAT():
                 resultMap['status'] = 'CRASHED'
                 resultMap['misc'] = "Instance is SAT but UNSAT was reported"
                 # save command line call
-                failed_file = os.path.join(self._tmp_dir,self._FAILED_FILE) 
+                failed_file = os.path.join(self._tmp_dir, self._FAILED_FILE) 
                 with open(failed_file, "a") as fp:
-                    fp.write(self.__cmd+"\n")
+                    fp.write(self.__cmd + "\n")
                     fp.flush()
-            if(self._specifics=="SATISFIABLE" or self._specifics=="10"):
+            if(self._specifics == "SATISFIABLE" or self._specifics == "10"):
                 resultMap['status'] = 'CRASHED'
                 resultMap['misc'] = "SOLVER BUG: instance is SATISFIABLE but solver claimed it is UNSATISFIABLE"
         elif re.search('SATISFIABLE', data):
@@ -134,7 +134,7 @@ class SatCSSCWrapper(AbstractWrapper):
             model = None
             for line in data.split("\n"):
                 if line.startswith("v "):
-                    model = map(int,line.split(" ")[1:-1])
+                    model = map(int, line.split(" ")[1:-1])
                     break
 
             # verify SAT
@@ -144,7 +144,7 @@ class SatCSSCWrapper(AbstractWrapper):
             elif not self.args.sat_checker:
                 resultMap['misc'] = "SAT checker was not given; could not verify SAT"
             elif not os.path.isfile(self.args.sat_checker):
-                resultMap['misc'] = "have not found %s; could not verify SAT" %(self.args.sat_checker)
+                resultMap['misc'] = "have not found %s; could not verify SAT" % (self.args.sat_checker)
             elif model is None:
                 resultMap['misc'] = "print of solution was probably incomplete because of runsolver SIGTERM/SIGKILL"
                 resultMap['status'] = 'TIMEOUT'
@@ -157,23 +157,22 @@ class SatCSSCWrapper(AbstractWrapper):
                     resultMap['status'] = 'CRASHED'
                     resultMap['misc'] = "SOLVER BUG: solver returned a wrong model"
                     # save command line call
-                    failed_file = os.path.join(self._tmp_dir,self._FAILED_FILE) 
+                    failed_file = os.path.join(self._tmp_dir, self._FAILED_FILE) 
                     with open(failed_file, "a") as fp:
-                        fp.write(self.__cmd+"\n")
+                        fp.write(self.__cmd + "\n")
                         fp.flush()
          
-            if(self._specifics=="UNSATISFIABLE" or self._specifics=="20"):
+            if(self._specifics == "UNSATISFIABLE" or self._specifics == "20"):
                 resultMap['status'] = 'CRASHED'
                 resultMap['misc'] = "SOLVER BUG: instance is UNSATISFIABLE but solver claimed it is SATISFIABLE"
             
-	if re.search('s UNKNOWN', data):
+        elif re.search('s UNKNOWN', data):
             resultMap['status'] = 'TIMEOUT'
             resultMap['misc'] = "Found s UNKNOWN line - interpreting as TIMEOUT"
-	    return resultMap
-	if re.search('INDETERMINATE', data):
+        elif re.search('INDETERMINATE', data):
             resultMap['status'] = 'TIMEOUT'
             resultMap['misc'] = "Found INDETERMINATE line - interpreting as TIMEOUT"
-	    return resultMap	
+        
         return resultMap
     
     def _verify_SAT(self, model, solver_output):
@@ -188,14 +187,14 @@ class SatCSSCWrapper(AbstractWrapper):
         '''
         cmd = [self.args.sat_checker, self.__instance, solver_output.name]
         io = Popen(cmd, stdout=PIPE)
-        out_,err_ = io.communicate()
+        out_, err_ = io.communicate()
         for line in out_.split("\n"):
             if "Solution verified" in line:
                 self.print_d("Solution verified")
                 return True
             elif "Wrong solution" in line:
                 return False
-        return True # should never happen
+        return True  # should never happen
 
     def _verify_UNSAT(self):
         '''
