@@ -21,6 +21,10 @@ You have to implement only two functions
   
 See the docstrings and the examples for more details.
 
+### NOTE
+
+For debugging reasons, the generic wrapper will not delete the output files of your algorithm if your algorithm crashed (or failed in any way). If your algorithm crashes very often, this can fill up your file system quickly.
+
 ## Requirements
 
 Since we use the `runsolver` to limit resources, the generic wrapper can only be used on Linux systems.
