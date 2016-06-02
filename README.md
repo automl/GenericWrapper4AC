@@ -6,6 +6,8 @@ The generic wrapper is developed and maintained by members of the [ML4AAD](http:
 
 ## USAGE
 
+The generic wrapper provides the interfaces to ParamILS and SMAC. Please see the [documentation of SMAC](http://www.cs.ubc.ca/labs/beta/Projects/SMAC/v2.10.03/manual.pdf) for an extensive description of the required interfaces.
+
 The script `generic_wrapper.py` provides the class `AbstractWrapper`. It provides all necessary functions to run your algorithms, including:
 
   * reading the input format of ParamILS and SMAC

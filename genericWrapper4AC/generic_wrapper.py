@@ -218,7 +218,7 @@ class AbstractWrapper(object):
                 self._ta_quality = resultMap['quality']
             if 'misc' in resultMap and not self._ta_misc:
                 self._ta_misc = resultMap['misc']
-            if 'misc' in resultMap and self._ta_misc:
+            elif 'misc' in resultMap and self._ta_misc:
                 self._ta_misc +=  " - " + resultMap['misc']
                 
             # if still no status was determined, something went wrong and output files should be kept
