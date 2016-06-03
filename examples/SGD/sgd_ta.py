@@ -6,7 +6,8 @@ from sklearn import cross_validation
 
 iris = load_iris()
 
-X_train, X_test, y_train, y_test = cross_validation.train_test_split(iris.data, iris.target, test_size=0.4, random_state=0)
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(iris.data, iris.target, test_size=0.25, random_state=0)
+X_train, X_valid, y_train, y_valid = cross_validation.train_test_split(X_train, y_train, test_size=0.25, random_state=0)
 
 params = iter(sys.argv[2:])
 
@@ -47,7 +48,7 @@ sgd = SGDClassifier(random_state=random_state,
 sgd.fit(X_train,y_train)
 
 if sys.argv[1] == "train":
-    print(-1 * sgd.score(X_train, y_train))
+    print(-1 * sgd.score(X_valid, y_valid))
 else:
     print(-1 * sgd.score(X_test, y_test))
 
