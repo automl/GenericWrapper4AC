@@ -16,6 +16,7 @@ python src/generic_wrapper/braninWrapper.py --internal True dummy_instance "" 0.
 import sys
 import re
 import math
+import logging
 
 from genericWrapper4AC.generic_wrapper import AbstractWrapper
 
@@ -25,6 +26,7 @@ class SGDWrapper(AbstractWrapper):
     '''
     
     def __init__(self):
+        logging.basicConfig()
         AbstractWrapper.__init__(self)
         
         self._return_value = None
@@ -68,7 +70,7 @@ class SGDWrapper(AbstractWrapper):
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
         
-        self.print_d("reading solver results from %s" % (filepointer.name))
+        self.logger.debug("reading solver results from %s" % (filepointer.name))
         try:
             out_ = str(filepointer.read())
             return_value = float(out_) # assumption that the SGD script will only print the accuracy value

@@ -16,6 +16,7 @@ python src/generic_wrapper/braninWrapper.py --internal True dummy_instance "" 0.
 import sys
 import re
 import math
+import logging
 
 from genericWrapper4AC.generic_wrapper import AbstractWrapper
 

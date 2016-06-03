@@ -24,6 +24,7 @@ import random
 import traceback
 import shutil
 import json
+import logging
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -47,6 +48,8 @@ class AbstractWrapper(object):
         '''
             Constructor
         '''
+        self.logger = logging.getLogger("GenericWrapper")
+        
         #program_name = os.path.basename(sys.argv[0])
         program_version = "v%s" % __version__
         program_build_date = str(__updated__)
@@ -92,6 +95,9 @@ class AbstractWrapper(object):
         self._subprocesses = []
         
         self._DEBUG = True
+        if self._DEBUG:
+            self.logger.setLevel(logging.DEBUG)
+        
         self._DELAY2KILL = 2
 
         self._ta_status = "EXTERNALKILL"
@@ -103,6 +109,7 @@ class AbstractWrapper(object):
         
 
     def print_d(self, str_):
+        # legacy code
         if self._DEBUG:
             print(str_)
         
@@ -255,7 +262,7 @@ class AbstractWrapper(object):
         if (len(params)/2)*2 != len(params):
             self._ta_status = "ABORT"
             self._ta_misc = "target algorithm parameter list MUST have even length - found %d arguments." % (len(params))
-            self.print_d(" ".join(params))
+            self.logger.debug(" ".join(params))
             self._exit_code = 1
             sys.exit(1)
         
@@ -280,8 +287,8 @@ class AbstractWrapper(object):
         
         runsolver_cmd.extend(target_cmd)
         #for debugging
-        self.print_d("Calling runsolver. Command-line:")
-        self.print_d(" ".join(map(str,runsolver_cmd)))
+        self.logger.debug("Calling runsolver. Command-line:")
+        self.logger.debug(" ".join(map(str,runsolver_cmd)))
 
         # run
         try:
@@ -319,7 +326,7 @@ class AbstractWrapper(object):
             self._ta_exit_code = 0
             return
         
-        self.print_d("Reading runsolver output from %s" % (self._watcher_file.name))
+        self.logger.debug("Reading runsolver output from %s" % (self._watcher_file.name))
         data = str(self._watcher_file.read())
 
         if (re.search('runsolver_max_cpu_time_exceeded', data) or re.search('Maximum CPU time exceeded', data)):
@@ -376,12 +383,12 @@ class AbstractWrapper(object):
                 for sub in self._subprocesses:
                     #sub.terminate()
                     Popen(["pkill","-TERM", "-P",str(sub.pid)], universal_newlines=True)
-                    self.print_d("Wait %d seconds ..." % (self._DELAY2KILL))
+                    self.logger.debug("Wait %d seconds ..." % (self._DELAY2KILL))
                     time.sleep(self._DELAY2KILL)
                     if sub.returncode is None: # still running
                         sub.kill()
 
-                self.print_d("done... If anything in the subprocess tree fork'd a new process group, we may not have caught everything...")
+                self.logger.debug("done... If anything in the subprocess tree fork'd a new process group, we may not have caught everything...")
                 self._ta_misc = "forced to exit by signal or keyboard interrupt."
                 self._ta_runtime = self._cutoff
             except (OSError, KeyboardInterrupt, SystemExit):
@@ -455,7 +462,7 @@ class AbstractWrapper(object):
         
         cmd = ext_call.split(" ")
         cmd.append(callstring_in.name)
-        self.print_d(" ".join(cmd))
+        self.logger.debug(" ".join(cmd))
         try:
             io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE, universal_newlines=True)
             self._subprocesses.append(io)
@@ -511,7 +518,7 @@ class AbstractWrapper(object):
         
         cmd = ext_call.split(" ")
         cmd.append(filepointer.name)
-        self.print_d(" ".join(cmd))
+        self.logger.debug(" ".join(cmd))
         try:
             io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE, universal_newlines=True)
             self._subprocesses.append(io)

@@ -20,6 +20,7 @@ import sys
 import re
 import os
 import imp
+import logging
 from subprocess import Popen, PIPE
 
 from genericWrapper4AC.generic_wrapper import AbstractWrapper
@@ -33,6 +34,7 @@ class SatCSSCWrapper(AbstractWrapper):
         '''
             Constructor
         '''
+        logging.basicConfig()
         AbstractWrapper.__init__(self)
         
         self.parser.add_argument("--script", dest="cssc_script", required=True, help="simple cssc script with only \"get_command_line_cmd(runargs, config)\"")
@@ -101,7 +103,7 @@ class SatCSSCWrapper(AbstractWrapper):
             }
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
-        self.print_d("reading solver results from %s" % (filepointer.name))
+        self.logger.debug("reading solver results from %s" % (filepointer.name))
         data = str(filepointer.read())
         resultMap = {}
         
@@ -190,7 +192,7 @@ class SatCSSCWrapper(AbstractWrapper):
         out_, err_ = io.communicate()
         for line in out_.split("\n"):
             if "Solution verified" in line:
-                self.print_d("Solution verified")
+                self.logger.debug("Solution verified")
                 return True
             elif "Wrong solution" in line:
                 return False
