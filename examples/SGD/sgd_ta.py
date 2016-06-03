@@ -20,7 +20,7 @@ while True:
     value = next(params)
     
     if name == "random_state":
-        sgd.random_state = int(value)
+        sgd.random_state = int(value)+1
         
     elif name == "loss":
         sgd.loss = str(value)
