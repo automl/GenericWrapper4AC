@@ -47,8 +47,9 @@ class AbstractBlackBoxWrapper(AbstractWrapper):
         '''
         config = dict((name[1:], value) for name, value in config.items()) # remove leading "-" at parameter names
         self._return_value = self.get_value(config)
+        #NOTE: We cheat here by already evaluating the target function. Therefore, the resource limitation will not work 
         
-        return ""
+        return "" # by returning an empty string, the target algorithm call will be skipped
     
     def process_results(self, filepointer, exit_code):
         '''
