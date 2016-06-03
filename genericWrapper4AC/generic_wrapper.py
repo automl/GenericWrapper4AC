@@ -503,6 +503,7 @@ class AbstractWrapper(object):
             A map containing the standard AClib run results. The current standard result map as of AClib 2.06 is:
             {
                 "status" : <"SAT"/"UNSAT"/"TIMEOUT"/"CRASHED"/"ABORT">,
+                "runtime" : <runtime of target algrithm>,
                 "quality" : <a domain specific measure of the quality of the solution [optional]>,
                 "misc" : <a (comma-less) string that will be associated with the run [optional]>
             }

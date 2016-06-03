@@ -7,7 +7,7 @@ As a general interface to SAT solvers, we provide the class `SATCSSCWrapper.SatC
 It implements the two necessary functions:
 
   * `get_command_line_args()`
-  *  `get_command_line_args_ext()`
+  *  `process_results()`
   
 The function `get_command_line_args()` simply loads a solver-specific script, which can be specified on the command line by `--script`. 
 

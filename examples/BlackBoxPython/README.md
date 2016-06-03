@@ -8,7 +8,7 @@ As written in the general README,
 you have two provide two functions for the generic wrapper:
 
   * `get_command_line_args()`
-  * `get_command_line_args_ext()`
+  * `process_results()`
   
 For blackbox functions, we provide with `abstractBlackBoxWrapper.AbstractBlackBoxWrapper` an abstract instantiation of `generic_wrapper.AbstractWrapper` that implements these two functions. 
 Still the function to evaluate the black box function is missing, i.e., `AbstractBlackBoxWrapper.get_value()`.
