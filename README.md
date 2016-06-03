@@ -16,8 +16,8 @@ The script `generic_wrapper.py` provides the class `AbstractWrapper`. It provide
   
 You have to implement only two functions
 
-  * `get_command_line_args()`
-  *  `get_command_line_args_ext()`
+  * `get_command_line_args()` : given the parameter configuration, the instance at hand and the random see, the function has to return the command line call of your algorithm (string)
+  *  `process_results()`: given the output of your algorithm, this function has to return a dictionary including the return status of your algorithm ("SUCCESS"|"TIMEOUT"|"CRASHED"|"ABORT") and the runtime/quality/cost of your algorithm run.
   
 See the docstrings and the examples for more details.
 
