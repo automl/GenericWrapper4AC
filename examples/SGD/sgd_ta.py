@@ -8,9 +8,7 @@ iris = load_iris()
 
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(iris.data, iris.target, test_size=0.4, random_state=0)
 
-sgd = SGDClassifier()
-
-params = iter(sys.argv[1:])
+params = iter(sys.argv[2:])
 
 while True:
     try:
@@ -20,25 +18,37 @@ while True:
     value = next(params)
     
     if name == "random_state":
-        sgd.random_state = int(value)+1
+        random_state = int(value)+1
         
     elif name == "loss":
-        sgd.loss = str(value)
+        loss = str(value)
         
     elif name == "penalty":
-        sgd.penalty = str(value)
+        penalty = str(value)
         
     elif name == "alpha":
-        sgd.alpha = float(value)
+        alpha = float(value)
         
     elif name == "learning_rate":
-        sgd.learning_rate = str(value)
+        learning_rate = str(value)
         
     elif name == "eta0":
-        sgd.eta0 = float(value)
+        eta0 = float(value)
+    
+sgd = SGDClassifier(random_state=random_state,
+                    loss=loss,
+                    penalty=penalty,
+                    alpha=alpha,
+                    learning_rate=learning_rate,
+                    eta0=eta0)    
+    
+#print(sgd.loss, sgd.penalty, sgd.alpha, sgd.learning_rate, sgd.eta0)
         
 sgd.fit(X_train,y_train)
 
-print(sgd.score(X_test, y_test))
+if sys.argv[1] == "train":
+    print(-1 * sgd.score(X_train, y_train))
+else:
+    print(-1 * sgd.score(X_test, y_test))
 
 

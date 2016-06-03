@@ -47,7 +47,7 @@ class SGDWrapper(AbstractWrapper):
         Returns:
             A command call list to execute the target algorithm.
         '''
-        cmd = "python examples/SGD/sgd_ta.py random_state %d " %(runargs["seed"])
+        cmd = "python examples/SGD/sgd_ta.py %s random_state %d " %(runargs["instance"], runargs["seed"])
         cmd += " ".join(["%s %s" %(name[1:], value) for name, value in config.items()]) 
         
         return cmd 
