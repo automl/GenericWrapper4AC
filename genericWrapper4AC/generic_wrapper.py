@@ -52,7 +52,7 @@ class AbstractWrapper(object):
         ch = logging.StreamHandler(sys.stdout)
         formatter = logging.Formatter('[%(name)s][%(levelname)s] %(message)s')
         ch.setFormatter(formatter)
-        root.addHandler(ch)
+        root.handlers = [ch]
         self.logger = logging.getLogger("GenericWrapper")
         
         #program_name = os.path.basename(sys.argv[0])
