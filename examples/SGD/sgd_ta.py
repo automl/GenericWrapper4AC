@@ -6,8 +6,19 @@ from sklearn import cross_validation
 
 iris = load_iris()
 
-X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(iris.data, iris.target, test_size=0.25, random_state=0)
-X_train, X_valid, y_train, y_valid = cross_validation.train_test_split(X_train_f, y_train_f, test_size=0.25, random_state=0)
+if sys.argv[1] == "train":
+    X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(iris.data, iris.target, test_size=0.25, random_state=0)
+    X_train, X_valid, y_train, y_valid = cross_validation.train_test_split(X_train_f, y_train_f, test_size=0.25, random_state=0)
+elif sys.argv[1] == "test":
+    X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(iris.data, iris.target, test_size=0.25, random_state=0)
+elif sys.argv[1][:2] == "cv":
+    X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(iris.data, iris.target, test_size=0.25, random_state=0)
+    kfs = [kf for kf in cross_validation.KFold(n=X_train_f.shape[0], n_folds=10, shuffle=True, random_state=1)]
+    cv = int(sys.argv[1][2:]) - 1
+    X_train = X_train_f[kfs[cv][0]]
+    y_train = y_train_f[kfs[cv][0]]
+    X_valid = X_train_f[kfs[cv][1]]
+    y_valid = y_train_f[kfs[cv][1]]
 
 params = iter(sys.argv[2:])
 
@@ -45,7 +56,7 @@ sgd = SGDClassifier(random_state=random_state,
     
 #print(sgd.loss, sgd.penalty, sgd.alpha, sgd.learning_rate, sgd.eta0)
         
-if sys.argv[1] == "train":
+if sys.argv[1] == "train" or sys.argv[1][:2] == "cv":
     sgd.fit(X_train,y_train)
     print(-1 * sgd.score(X_valid, y_valid))
 else:
