@@ -16,13 +16,13 @@ class InstallRunsolver(install):
         try:
             shutil.rmtree(DOWNLOAD_DIRECTORY)
         except Exception:
-            traceback.print_exc()
+            #traceback.print_exc()
             pass
 
         try:
             os.makedirs(DOWNLOAD_DIRECTORY)
         except Exception:
-            traceback.print_exc()
+            #traceback.print_exc()
             pass
 
 
