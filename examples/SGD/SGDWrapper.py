@@ -79,7 +79,7 @@ class SGDWrapper(AbstractWrapper):
              'quality' : return_value
              }
         except ValueError:
-            resultMap = {'status' : 'TIMEOUT',
+            resultMap = {'status' : 'CRASHED',
              'quality' : 0
              }
 

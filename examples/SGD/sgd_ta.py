@@ -4,8 +4,8 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.datasets import load_iris, load_digits
 from sklearn import cross_validation
 
-#data = load_iris()
-data = load_digits()
+data = load_iris()
+#data = load_digits()
 
 if sys.argv[1] == "train":
     X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(data.data, data.target, test_size=0.25, random_state=0)
