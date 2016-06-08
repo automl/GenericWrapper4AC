@@ -1,3 +1,10 @@
+runsolver with fixes from Steve Ramage
+
+Please note that we implemented some bug fixes in the runsolver-3.3.4.
+Please see below the original README from the runsolver by Olivier Roussel.
+
+========================================================================== 
+
 runsolver Copyright (C) 2010 Olivier ROUSSEL (roussel@cril.univ-artois.fr)
 
 runsolver is a program meant to control the ressources used by a
