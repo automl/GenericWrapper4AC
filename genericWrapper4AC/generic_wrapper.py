@@ -33,7 +33,7 @@ __all__ = []
 __version__ = 0.2
 __authors__ = 'Marius Lindauer, Chris Fawcett, Alex Fréchette, Frank Hutter'
 __date__ = '2014-03-06'
-__updated__ = '2014-06-18'
+__updated__ = '2016-06-08'
 __license__ = "BSD"
 
 def signalHandler(signum, frame):
@@ -212,10 +212,14 @@ class AbstractWrapper(object):
             target_cmd = target_cmd.split(" ")
             target_cmd = filter(lambda x: x != "", target_cmd)
             
- 
             if not args.internal:
+                start_time = time.time()
                 self.call_target(target_cmd)
+                self._ta_runtime = time.time() - start_time
+                self.logger.debug("Measured wallclock time: %f" %(self._ta_runtime))
                 self.read_runsolver_output()
+                self.logger.debug("Measured time by runsolver: %f" %(self._ta_runtime))
+            
                 
             if args.ext_parsing:
                 resultMap = self.process_results_ext(self._solver_file, {"exit_code" : self._ta_exit_code, "instance" : self._instance}, ext_call=args.ext_parsing)
