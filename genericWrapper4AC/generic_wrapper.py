@@ -263,6 +263,7 @@ class AbstractWrapper(object):
         self._instance = arg_list[0]
         self._specifics = arg_list[1]
         self._cutoff = int(float(arg_list[2]) + 1-1e-10) # runsolver only rounds down to integer
+        self._cutoff = min(self._cutoff, 2**31 -1) # at most 32bit integer supported
         self._ta_runtime = self._cutoff
         self._runlength = int(arg_list[3])
         self._seed = int(arg_list[4])
