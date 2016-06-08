@@ -2,15 +2,12 @@
 # encoding: utf-8
 
 '''
-braninWrapper -- AClib target algorithm warpper for branin test function
+braninWrapper -- target algorithm warpper for branin test function
 
-@author:     Marius Lindauer, Chris Fawcett, Alex Fréchette, Frank Hutter
-@copyright:  2014 AClib. All rights reserved.
-@license:    GPL
-@contact:    lindauer@informatik.uni-freiburg.de, fawcettc@cs.ubc.ca, afrechet@cs.ubc.ca, fh@informatik.uni-freiburg.de
-
-example call (in aclib folder structure):
-python src/generic_wrapper/braninWrapper.py --internal True dummy_instance "" 0.0 2147483647 1234 -x1  3.141592 -x2 2.275
+@author:     Marius Lindauer
+@copyright:  2016 ML4AAD. All rights reserved.
+@license:    BSD
+@contact:    lindauer@informatik.uni-freiburg.de
 '''
 
 import sys

@@ -2,15 +2,12 @@
 # encoding: utf-8
 
 '''
-abstractBlackBoxWrapper -- abstract call for black box wrapper; get_value() is not implemented
+SGDWrapper -- Simple wrapper around an external script for SGD
 
-@author:     Marius Lindauer, Chris Fawcett, Alex Fréchette, Frank Hutter
-@copyright:  2014 AClib. All rights reserved.
-@license:    GPL
-@contact:    lindauer@informatik.uni-freiburg.de, fawcettc@cs.ubc.ca, afrechet@cs.ubc.ca, fh@informatik.uni-freiburg.de
-
-example call (in aclib folder structure):
-python src/generic_wrapper/braninWrapper.py --internal True dummy_instance "" 0.0 2147483647 1234 -x1  3.141592 -x2 2.275
+@author:     Marius Lindauer
+@copyright:  2016 ML4AAD. All rights reserved.
+@license:    BSD
+@contact:    lindauer@informatik.uni-freiburg.de
 '''
 
 import sys
@@ -22,7 +19,7 @@ from genericWrapper4AC.generic_wrapper import AbstractWrapper
 
 class SGDWrapper(AbstractWrapper):
     '''
-        Simple wrapper for a SAT solver (Spear)
+        Simple wrapper for an external SDG script
     '''
     
     def __init__(self):

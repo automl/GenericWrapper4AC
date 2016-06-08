@@ -1,3 +1,15 @@
+#!/usr/bin/env python2.7
+# encoding: utf-8
+
+'''
+sgd_ta -- script to fit and evaluate SGD wrt a given configuration
+
+@author:     Marius Lindauer
+@copyright:  2016 ML4AAD. All rights reserved.
+@license:    BSD
+@contact:    lindauer@informatik.uni-freiburg.de
+'''
+
 import sys
 
 from sklearn.linear_model import SGDClassifier
