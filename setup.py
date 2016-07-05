@@ -25,7 +25,6 @@ class InstallRunsolver(install):
             #traceback.print_exc()
             pass
 
-
         shutil.copytree(RUNSOLVER_LOCATION,os.path.join(DOWNLOAD_DIRECTORY,"runsolver"))
         runsolver_source_path = os.path.join(DOWNLOAD_DIRECTORY,"runsolver")
 
@@ -44,8 +43,6 @@ class InstallRunsolver(install):
 
         try:
             os.makedirs(BINARIES_DIRECTORY)
-            with open(os.path.join(BINARIES_DIRECTORY, '__init__.py')):
-                pass
         except Exception:
             pass
 
@@ -64,7 +61,7 @@ class InstallRunsolver(install):
             shutil.rmtree(DOWNLOAD_DIRECTORY)
         except OSError:
             pass
-        
+
 setuptools.setup(
     name='GenericWrapper4AC',
     description='Generic Wrapper to interface between algorithm configurators and algorithms to tune',
@@ -73,6 +70,7 @@ setuptools.setup(
     test_suite='nose.collector',
     cmdclass={'install': InstallRunsolver},
     include_package_data=True,
+    package_data={"genericWrapper4AC": ["binaries/runsolver"]},
     author='Marius Lindauer',
     author_email='lindauer@informatik.uni-freiburg.de',
     license='BSD',
