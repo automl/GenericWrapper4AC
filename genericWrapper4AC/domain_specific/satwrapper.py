@@ -31,7 +31,6 @@ class SatWrapper(AbstractWrapper):
         logging.basicConfig()
         AbstractWrapper.__init__(self)
         
-        self.parser.add_argument("--script", dest="cssc_script", required=True, help="simple cssc script with only \"get_command_line_cmd(runargs, config)\"")
         self.parser.add_argument("--sol-file", dest="solubility_file", default=None, help="File with \"<instance> {SATISFIABLE|UNSATISFIABLE|UNKNOWN}\" ")
         self.parser.add_argument("--sat-checker", dest="sat_checker", default=None, help="binary of SAT checker")
 
@@ -42,44 +41,6 @@ class SatWrapper(AbstractWrapper):
         
         self.inst_specific = None
         
-    def get_command_line_args(self, runargs, config):
-        '''
-        Returns the command line call string to execute the target algorithm (here: Spear).
-        Args:
-            runargs: a map of several optional arguments for the execution of the target algorithm.
-                    {
-                      "instance": <instance>,
-                      "specifics" : <extra data associated with the instance>,
-                      "cutoff" : <runtime cutoff>,
-                      "runlength" : <runlength cutoff>,
-                      "seed" : <seed>,
-                      "tmp" : directory for temporary files (only available if --temp-file-dir-algo was used)
-                    }
-            config: a mapping from parameter name to parameter value
-        Returns:
-            A command call list to execute the target algorithm.
-        '''
-        
-        self.inst_specific = runargs["specifics"]
-        
-        ext_script = self.args.cssc_script
-        if not os.path.isfile(ext_script):
-            self._ta_status = "ABORT"
-            self._ta_misc = "cssc script is missing - should have been at %s." % (ext_script)
-            self._exit_code = 1
-            sys.exit(1)
-        
-        loaded_script = imp.load_source("cssc", ext_script)
-        
-        
-        cmd = loaded_script.get_command_line_cmd(runargs, config)
-
-        # remember instance and cmd to verify the result later on
-        self.__instance = runargs["instance"] 
-        self.__cmd = cmd
-
-        return cmd
-    
     def process_results(self, filepointer, exit_code):
         '''
         Parse a results file to extract the run's status (SUCCESS/CRASHED/etc) and other optional results.

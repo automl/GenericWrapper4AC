@@ -41,7 +41,7 @@ def signalHandler(signum, frame):
 
 class AbstractWrapper(object):
     '''
-        abstract solver wrapper
+        abstract algorithm wrapper
     '''
     
     def __init__(self):
@@ -59,20 +59,20 @@ class AbstractWrapper(object):
         program_version = "v%s" % __version__
         program_build_date = str(__updated__)
         program_version_message = "%%(prog)s %s (%s)" % (program_version, program_build_date)
-        program_shortdesc = __import__("__main__").__doc__.split("\n")[1]
-        program_license = '''%s
+        
+        #program_shortdesc = __import__("__main__").__doc__.split("\n")[1]
+        program_license = '''GenericWrapper4AC
     
           Created by %s on %s.
-          Copyright 2014 - AClib. All rights reserved.
+          Copyright 2016 - AClib. All rights reserved.
           
-          Licensed under the GPLv2
-          http://www.gnu.org/licenses/gpl-2.0.html
+          Licensed under the BSD
           
           Distributed on an "AS IS" basis without warranties
           or conditions of any kind, either express or implied.
         
           USAGE
-        ''' % (program_shortdesc, str(__authors__), str(__date__))
+        ''' % (str(__authors__), str(__date__))
         #self.parser = ArgumentParser(description=program_license, formatter_class=RawDescriptionHelpFormatter, add_help=False)
         self.parser = OArgumentParser()
         self.args = None
@@ -138,18 +138,6 @@ class AbstractWrapper(object):
             self.parser.add_argument("--mem-limit", dest="mem_limit", default=self._mem_limit, type=int, help="memory limit in MB")
             self.parser.add_argument("--internal", dest="internal", default=False, type=bool, help="skip calling an external target algorithm")
             self.parser.add_argument("--log", dest="log", default=False, type=bool, help="logs all runs in \"target_algo_runs.csv\" in --temp-file-dir")
-            self.parser.add_argument("--ext-callstring", dest="ext_callstring", default=None, help="Command to get call string via external program;" +
-                                                                                             "your programm gets a file with"+
-                                                                                             "first line: instance name," + 
-                                                                                             "second line: seed"+
-                                                                                             "further lines: paramter name, paramater value;"+ 
-                                                                                             "output: one line with callstring for target algorithm")
-            self.parser.add_argument("--ext-parsing", dest="ext_parsing", default=None, help="Command to use an external program to parse the output of your target algorihm;" +
-                                                                                           "only paramter: name of output file;"+
-                                                                                           "output of your progam:"+
-                                                                                           "status: SAT|UNSAT|TIMEOUT|CRASHED\n"+
-                                                                                           "quality: <integer>\n"+
-                                                                                           "misc: <string>")
             self.parser.add_argument("--help", dest="show_help", default=False, type=bool, help="shows help")
 
             # Process arguments
@@ -204,10 +192,7 @@ class AbstractWrapper(object):
                         "tmp" : self._tmp_dir_algo
                       }
             
-            if args.ext_callstring:
-                target_cmd = self.get_command_line_args_ext(runargs=runargs, config=self._config_dict, ext_call=args.ext_callstring)
-            else:
-                target_cmd = self.get_command_line_args(runargs=runargs, config=self._config_dict)
+            target_cmd = self.get_command_line_args(runargs=runargs, config=self._config_dict)
                       
             target_cmd = target_cmd.split(" ")
             target_cmd = filter(lambda x: x != "", target_cmd)
@@ -221,10 +206,7 @@ class AbstractWrapper(object):
                 self.logger.debug("Measured time by runsolver: %f" %(self._ta_runtime))
             
                 
-            if args.ext_parsing:
-                resultMap = self.process_results_ext(self._solver_file, {"exit_code" : self._ta_exit_code, "instance" : self._instance}, ext_call=args.ext_parsing)
-            else:
-                resultMap = self.process_results(self._solver_file, {"exit_code" : self._ta_exit_code, "instance" : self._instance})
+            resultMap = self.process_results(self._solver_file, {"exit_code" : self._ta_exit_code, "instance" : self._instance})
             
             if ('status' in resultMap):
                 self._ta_status = self.RESULT_MAPPING.get(resultMap['status'],resultMap['status'])
@@ -451,47 +433,6 @@ class AbstractWrapper(object):
         '''
         raise NotImplementedError()
 
-    def get_command_line_args_ext(self, runargs, config, ext_call):
-        '''
-        When production of the target algorithm is done from a source other than python,
-        override this method to return a command call list to execute whatever you need to produce the command line.
-
-        Args:
-            runargs: a map of any non-configuration arguments required for the execution of the solver.
-            config: a mapping from parameter name (with prefix) to parameter value.
-            ext_call: string to call external program to get callstring of target algorithm
-        Returns:
-            A command call list to execute the command producing a single line of output containing the solver command string
-        '''
-        callstring_in = NamedTemporaryFile(suffix=".csv", prefix="callstring", dir=self._tmp_dir, delete=False)
-        callstring_in.write("%s\n" %(runargs["instance"]))
-        callstring_in.write("%d\n" %(runargs["seed"]))
-        for name,value in config.items():
-            callstring_in.write("%s,%s\n" %(name,value))
-        callstring_in.flush()
-        
-        cmd = ext_call.split(" ")
-        cmd.append(callstring_in.name)
-        self.logger.debug(" ".join(cmd))
-        try:
-            io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE, universal_newlines=True)
-            self._subprocesses.append(io)
-            out_, _ = io.communicate()
-            self._subprocesses.remove(io)
-        except OSError:
-            self._ta_misc = "failed to run external program for output parsing : %s" %(" ".join(cmd))
-            self._ta_runtime = self._cutoff
-            self._exit_code = 2
-            sys.exit(2)
-        if not out_ :
-            self._ta_misc = "external program for output parsing yielded empty output: %s" %(" ".join(cmd))
-            self._ta_runtime = self._cutoff
-            self._exit_code = 2
-            sys.exit(2)
-        callstring_in.close()
-        os.remove(callstring_in.name)
-        return out_.strip('\n\r\b')
-    
     def process_results(self, filepointer, out_args):
         '''
         Parse a results file to extract the run's status (SUCCESS/CRASHED/etc) and other optional results.
@@ -511,46 +452,6 @@ class AbstractWrapper(object):
         '''
         raise NotImplementedError()
 
-    def process_results_ext(self, filepointer, out_args, ext_call):
-        '''
-        Args:
-            filepointer: a pointer to the file containing the solver execution standard out.
-            exit_code : exit code of target algorithm
-        Returns:
-            A map containing the standard AClib run results. The current standard result map as of AClib 2.06 is:
-            {
-                "status" : <"SAT"/"UNSAT"/"TIMEOUT"/"CRASHED"/"ABORT">,
-                "runtime" : <runtime of target algrithm>,
-                "quality" : <a domain specific measure of the quality of the solution [optional]>,
-                "misc" : <a (comma-less) string that will be associated with the run [optional]>
-            }
-        '''
-        
-        cmd = ext_call.split(" ")
-        cmd.append(filepointer.name)
-        self.logger.debug(" ".join(cmd))
-        try:
-            io = Popen(cmd, shell=False, preexec_fn=os.setpgrp, stdout=PIPE, universal_newlines=True)
-            self._subprocesses.append(io)
-            out_, _ = io.communicate()
-            self._subprocesses.remove(io)
-        except OSError:
-            self._ta_misc = "failed to run external program for output parsing"
-            self._ta_runtime = self._cutoff
-            self._exit_code = 2
-            sys.exit(2)
-        
-        result_map = {}
-        for line in out_.split("\n"):
-            if line.startswith("status:"):
-                result_map["status"] = line.split(":")[1].strip(" ")
-            elif line.startswith("quality:"):
-                result_map["quality"] = line.split(":")[1].strip(" ")
-            elif line.startswith("misc:"):
-                result_map["misc"] = line.split(":")[1]
-        
-        return result_map
-        
         
 class Arguments():
     '''
