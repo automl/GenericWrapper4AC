@@ -274,8 +274,8 @@ class AbstractWrapper(object):
         runsolver_cmd = []
         if self._runsolver != "None":
             runsolver_cmd = [self._runsolver, "-M", self._mem_limit, "-C", self._cutoff,
-                             "-w", self._watcher_file.name,
-                             "-o", self._solver_file.name]
+                             "-w", "\"%s\"" %(self._watcher_file.name),
+                             "-o",  "\"%s\"" %(self._solver_file.name)]
         
         runsolver_cmd.extend(target_cmd)
         #for debugging
