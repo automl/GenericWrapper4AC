@@ -169,7 +169,9 @@ class SatWrapper(AbstractWrapper):
                     if status == "SATISFIABLE":
                         return False
                     else:
+                        self.logger.debug("Verified UNSAT")
                         return True
+        self.logger.debug("Could not find file to verify UNSAT")      
         return True
         
 
