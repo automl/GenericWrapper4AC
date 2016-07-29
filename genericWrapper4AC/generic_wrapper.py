@@ -193,9 +193,9 @@ class AbstractWrapper(object):
                       }
             
             target_cmd = self.get_command_line_args(runargs=runargs, config=self._config_dict)
-                      
-            target_cmd = target_cmd.split(" ")
-            target_cmd = filter(lambda x: x != "", target_cmd)
+            
+            if type(target_cmd) is list:
+                target_cmd = " ".join(target_cmd)           
             
             if not args.internal:
                 start_time = time.time()
@@ -277,21 +277,17 @@ class AbstractWrapper(object):
                              "-w", "\"%s\"" %(self._watcher_file.name),
                              "-o",  "\"%s\"" %(self._solver_file.name)]
         
-        runsolver_cmd.extend(target_cmd)
+        runsolver_cmd = " ".join(map(str,runsolver_cmd)) + " " + target_cmd
         #for debugging
         self.logger.debug("Calling runsolver. Command-line:")
-        self.logger.debug(" ".join(map(str,runsolver_cmd)))
+        self.logger.debug(runsolver_cmd)
 
         # run
         try:
             if self._runsolver != "None":
-                if "\"" in runsolver_cmd: # if there are quotes in the call, we cannot split it individual list elements. we have to call it via shell as a string; problematic solver: SparrowToRiss
-                    runsolver_cmd = " ".join(map(str, runsolver_cmd))
-                    io = Popen(runsolver_cmd, shell=True, preexec_fn=os.setpgrp, universal_newlines=True)
-                else:
-                    io = Popen(map(str, runsolver_cmd), shell=False, preexec_fn=os.setpgrp, universal_newlines=True)
+                io = Popen(runsolver_cmd, shell=True, preexec_fn=os.setpgrp, universal_newlines=True)
             else:
-                io = Popen(map(str, runsolver_cmd), stdout=self._solver_file, shell=False, preexec_fn=os.setpgrp, universal_newlines=True)
+                io = Popen(map(str, runsolver_cmd), stdout=self._solver_file, shell=True, preexec_fn=os.setpgrp, universal_newlines=True)
             self._subprocesses.append(io)
             io.wait()
             self._subprocesses.remove(io)
