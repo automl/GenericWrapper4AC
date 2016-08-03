@@ -59,7 +59,7 @@ class SatWrapper(AbstractWrapper):
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
         self.logger.debug("reading solver results from %s" % (filepointer.name))
-        data = str(filepointer.read())
+        data = str(filepointer.read().decode("utf8"))
         resultMap = {}
         
         if re.search('UNSATISFIABLE', data):
@@ -143,7 +143,7 @@ class SatWrapper(AbstractWrapper):
                 False if model was not correct
         '''
         cmd = [self.args.sat_checker, self.__instance, solver_output.name]
-        io = Popen(cmd, stdout=PIPE)
+        io = Popen(cmd, stdout=PIPE, universal_newlines=True)
         out_, err_ = io.communicate()
         for line in out_.split("\n"):
             if "Solution verified" in line:
