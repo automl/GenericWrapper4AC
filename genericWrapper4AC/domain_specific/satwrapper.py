@@ -34,8 +34,8 @@ class SatWrapper(AbstractWrapper):
         self.parser.add_argument("--sol-file", dest="solubility_file", default=None, help="File with \"<instance> {SATISFIABLE|UNSATISFIABLE|UNKNOWN}\" ")
         self.parser.add_argument("--sat-checker", dest="sat_checker", default=None, help="binary of SAT checker")
 
-        self.__instance = ""
-        self.__cmd = ""
+        self._instance = ""
+        self._instance = ""
         
         self._FAILED_FILE = "failed_runs.txt"  # in self._tmp_dir
         
@@ -58,6 +58,7 @@ class SatWrapper(AbstractWrapper):
             }
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
+        print(self._instance)
         self.logger.debug("reading solver results from %s" % (filepointer.name))
         data = str(filepointer.read().decode("utf8"))
         resultMap = {}
@@ -134,7 +135,7 @@ class SatWrapper(AbstractWrapper):
     
     def _verify_SAT(self, model, solver_output):
         '''
-            verifies the model for self.__instance 
+            verifies the model for self._instance 
             Args:
                 model : list with literals
                 solver_output: filepointer to solver output
@@ -142,7 +143,7 @@ class SatWrapper(AbstractWrapper):
                 True if model was correct
                 False if model was not correct
         '''
-        cmd = [self.args.sat_checker, self.__instance, solver_output.name]
+        cmd = [self.args.sat_checker, self._instance, solver_output.name]
         io = Popen(cmd, stdout=PIPE, universal_newlines=True)
         out_, err_ = io.communicate()
         for line in out_.split("\n"):
@@ -163,7 +164,7 @@ class SatWrapper(AbstractWrapper):
         
         with open(self.args.solubility_file) as fp:
             for line in fp:
-                if line.startswith(self.__instance):
+                if line.startswith(self._instance):
                     line = line.strip("\n")
                     status = line.split(" ")[1]
                     if status == "SATISFIABLE":
