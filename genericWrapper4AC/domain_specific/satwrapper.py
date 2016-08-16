@@ -37,8 +37,6 @@ class SatWrapper(AbstractWrapper):
         self._instance = ""
         self._instance = ""
         
-        self._FAILED_FILE = "failed_runs.txt"  # in self._tmp_dir
-        
         self.inst_specific = None
         
     def process_results(self, filepointer, exit_code):
@@ -77,11 +75,6 @@ class SatWrapper(AbstractWrapper):
             elif not self._verify_UNSAT():
                 resultMap['status'] = 'CRASHED'
                 resultMap['misc'] = "Instance is SAT but UNSAT was reported"
-                # save command line call
-                failed_file = os.path.join(self._tmp_dir, self._FAILED_FILE) 
-                with open(failed_file, "a") as fp:
-                    fp.write(self.__cmd + "\n")
-                    fp.flush()
             if(self._specifics == "SATISFIABLE" or self._specifics == "10"):
                 resultMap['status'] = 'CRASHED'
                 resultMap['misc'] = "SOLVER BUG: instance is SATISFIABLE but solver claimed it is UNSATISFIABLE"
@@ -115,10 +108,6 @@ class SatWrapper(AbstractWrapper):
                     resultMap['status'] = 'CRASHED'
                     resultMap['misc'] = "SOLVER BUG: solver returned a wrong model"
                     # save command line call
-                    failed_file = os.path.join(self._tmp_dir, self._FAILED_FILE) 
-                    with open(failed_file, "a") as fp:
-                        fp.write(self.__cmd + "\n")
-                        fp.flush()
          
             if(self._specifics == "UNSATISFIABLE" or self._specifics == "20"):
                 resultMap['status'] = 'CRASHED'

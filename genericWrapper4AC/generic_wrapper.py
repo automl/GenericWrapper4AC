@@ -180,7 +180,7 @@ class AbstractWrapper(object):
                 try: 
                     self._tmp_dir_algo = mkdtemp(dir="/tmp/")
                 except OSError:
-                    sys.stderr.write("Creating directory for temporary files failed")
+                    self.logger.error("Creating directory for temporary files failed")
                     pass
             
             runargs = {
@@ -516,7 +516,7 @@ class OArgumentParser(object):
                 try:
                     value = next(iterator_args)
                 except StopIteration:
-                    sys.stderr.write("%s is missing some value\n" %(name))
+                    self.logger.error("%s is missing some value\n" %(name))
                     sys.exit(2)
                 dict_ = self.options.get(name)
                 setattr(self.args, dict_["dest"], dict_["type"](value))
