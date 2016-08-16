@@ -56,7 +56,6 @@ class SatWrapper(AbstractWrapper):
             }
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
-        print(self._instance)
         self.logger.debug("reading solver results from %s" % (filepointer.name))
         data = str(filepointer.read().decode("utf8"))
         resultMap = {}
