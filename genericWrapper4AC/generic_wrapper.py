@@ -108,7 +108,7 @@ class AbstractWrapper(object):
         self._ta_status = "EXTERNALKILL"
         self._ta_runtime = 999999999.0
         self._ta_runlength = -1
-        self._ta_quality = -1
+        self._ta_quality = 999999999.0
         self._ta_exit_code = None
         self._ta_misc = ""
         
