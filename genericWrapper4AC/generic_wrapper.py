@@ -349,6 +349,7 @@ class AbstractWrapper(object):
                             "seed": self._seed,
                             "status": self._ta_status,
                             "time": self._ta_runtime,
+                            "quality": self._ta_quality,
                             "config": self._config_dict,
                             "misc": self._ta_misc}
                 json.dump(out_dict, fp)
