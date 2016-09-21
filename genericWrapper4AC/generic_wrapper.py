@@ -138,6 +138,7 @@ class AbstractWrapper(object):
             self.parser.add_argument("--mem-limit", dest="mem_limit", default=self._mem_limit, type=int, help="memory limit in MB")
             self.parser.add_argument("--internal", dest="internal", default=False, type=bool, help="skip calling an external target algorithm")
             self.parser.add_argument("--log", dest="log", default=False, type=bool, help="logs all runs in \"target_algo_runs.csv\" in --temp-file-dir")
+            self.parser.add_argument("--max_quality", dest="max_quality", default=None,  help="maximal quality of unsuccessful runs with timeouts or crashes")
             self.parser.add_argument("--help", dest="show_help", default=False, type=bool, help="shows help")
 
             # Process arguments
@@ -167,6 +168,9 @@ class AbstractWrapper(object):
                 sys.exit(1)
             else:
                 self._tmp_dir = args.tmp_dir
+            
+            if args.max_quality:
+                self._ta_quality = float(args.max_quality)
             
             if len(target_args) < 5:
                 self._ta_status = "ABORT"
