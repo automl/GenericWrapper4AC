@@ -113,11 +113,6 @@ class AbstractWrapper(object):
         self._ta_misc = ""
         
 
-    def print_d(self, str_):
-        # legacy code
-        if self._DEBUG:
-            print(str_)
-        
     def main(self, argv=None): 
         ''' parse command line'''
         if argv is None:
@@ -140,6 +135,11 @@ class AbstractWrapper(object):
             self.parser.add_argument("--log", dest="log", default=False, type=bool, help="logs all runs in \"target_algo_runs.csv\" in --temp-file-dir")
             self.parser.add_argument("--max_quality", dest="max_quality", default=None,  help="maximal quality of unsuccessful runs with timeouts or crashes")
             self.parser.add_argument("--help", dest="show_help", default=False, type=bool, help="shows help")
+            
+            # new format arguments
+            self.parser.add_argument("--instance", dest="instance", default=None, help="path to instance")
+            self.parser.add_argument("--cutoff", dest="cutoff", default=None, type=float, help="running time cutoff")
+            self.parser.add_argument("--seed", dest="seed", default=None, type=int, help="random seed")
 
             # Process arguments
             self.args, target_args = self.parser.parse_cmd(sys.argv[1:])
@@ -172,13 +172,13 @@ class AbstractWrapper(object):
             if args.max_quality:
                 self._ta_quality = float(args.max_quality)
             
-            if len(target_args) < 5:
+            if args.instance is None and len(target_args) < 5:
                 self._ta_status = "ABORT"
                 self._ta_misc = "some required TA parameters (instance, specifics, cutoff, runlength, seed) missing - was [%s]." % (" ".join(target_args))
                 self._exit_code = 1
                 sys.exit(1)
                 
-            self._config_dict = self.build_parameter_dict(target_args)
+            self._config_dict = self.build_parameter_dict(args, target_args)
             
             if args.tmp_dir_algo:
                 try: 
@@ -237,24 +237,41 @@ class AbstractWrapper(object):
             else:
                 sys.exit(0)
         
-    def build_parameter_dict(self, arg_list):
+    def build_parameter_dict(self, args, arg_list):
         '''
             Reads all arguments which were not parsed by ArgumentParser,
             extracts all meta information
             and builds a mapping: parameter name -> parameter value
             Format Assumption: <instance> <specifics> <runtime cutoff> <runlength> <seed> <solver parameters>
-            Args:
+            
+            Arguments
+            ---------
+            args: namedtuple
+                command line parsed arguments
+            arg_list: list
                 list of all options not parsed by ArgumentParser
         '''
-        self._instance = arg_list[0]
-        self._specifics = arg_list[1]
-        self._cutoff = int(float(arg_list[2]) + 1-1e-10) # runsolver only rounds down to integer
-        self._cutoff = min(self._cutoff, 2**31 -1) # at most 32bit integer supported
-        self._ta_runtime = self._cutoff
-        self._runlength = int(arg_list[3])
-        self._seed = int(arg_list[4])
         
-        params = arg_list[5:]
+        if "--config" in arg_list:
+            self._instance = args.instance
+            self._specifics = None
+            self._cutoff = int(float(args.cutoff) + 1-1e-10) # runsolver only rounds down to integer
+            self._cutoff = min(self._cutoff, 2**31 -1) # at most 32bit integer supported
+            self._ta_runtime = self._cutoff
+            self._runlength = None
+            self._seed = int(args.seed)
+            params = arg_list[arg_list.index("--config")+1:]
+        
+        else: 
+            self._instance = arg_list[0]
+            self._specifics = arg_list[1]
+            self._cutoff = int(float(arg_list[2]) + 1-1e-10) # runsolver only rounds down to integer
+            self._cutoff = min(self._cutoff, 2**31 -1) # at most 32bit integer supported
+            self._ta_runtime = self._cutoff
+            self._runlength = int(arg_list[3])
+            self._seed = int(arg_list[4])
+            params = arg_list[5:]
+            
         if (len(params)/2)*2 != len(params):
             self._ta_status = "ABORT"
             self._ta_misc = "target algorithm parameter list MUST have even length - found %d arguments." % (len(params))
@@ -359,6 +376,13 @@ class AbstractWrapper(object):
                 json.dump(out_dict, fp)
                 fp.write("\n")
                 fp.flush()
+                
+        if self._ta_status in ["SAT", "UNSAT"]:
+            aclib_status = "SUCCESS" 
+        else:
+            aclib_status = self._ta_status  
+        aclib2_out_dict = {"status": aclib_status, "cost": self._ta_quality, "runtime": self._ta_runtime, "misc": self._ta_misc}
+        print("Result of this algorithm run: %s" %(json.dumps(aclib2_out_dict)))
         
         sys.stdout.write("Result for ParamILS: %s, %s, %s, %s, %s" % (self._ta_status, str(self._ta_runtime), str(self._ta_runlength), str(self._ta_quality), str(self._seed)))
         if (len(self._ta_misc) > 0):
