@@ -172,7 +172,9 @@ class AbstractWrapper(object):
             if args.max_quality:
                 self._ta_quality = float(args.max_quality)
             
-            if args.instance is None and len(target_args) < 5:
+            self.new_format = "--config" in target_args
+            
+            if self.new_format and len(target_args) < 5:
                 self._ta_status = "ABORT"
                 self._ta_misc = "some required TA parameters (instance, specifics, cutoff, runlength, seed) missing - was [%s]." % (" ".join(target_args))
                 self._exit_code = 1
@@ -380,9 +382,11 @@ class AbstractWrapper(object):
         if self._ta_status in ["SAT", "UNSAT"]:
             aclib_status = "SUCCESS" 
         else:
-            aclib_status = self._ta_status  
-        aclib2_out_dict = {"status": aclib_status, "cost": self._ta_quality, "runtime": self._ta_runtime, "misc": self._ta_misc}
-        print("Result of this algorithm run: %s" %(json.dumps(aclib2_out_dict)))
+            aclib_status = self._ta_status
+          
+        if self.new_format:
+            aclib2_out_dict = {"status": aclib_status, "cost": self._ta_quality, "runtime": self._ta_runtime, "misc": self._ta_misc}
+            print("Result of this algorithm run: %s" %(json.dumps(aclib2_out_dict)))
         
         sys.stdout.write("Result for ParamILS: %s, %s, %s, %s, %s" % (self._ta_status, str(self._ta_runtime), str(self._ta_runlength), str(self._ta_quality), str(self._seed)))
         if (len(self._ta_misc) > 0):
