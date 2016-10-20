@@ -366,6 +366,9 @@ class AbstractWrapper(object):
 
     def print_result_string(self):
         
+        # ensure a minimal runtime of 0.0005
+        self._ta_runtime = max(0.0005, self._ta_runtime) 
+        
         if self.args and self.args.log:
             with open("target_algo_runs.json", "a") as fp:
                 out_dict = {"instance": self._instance,
@@ -385,7 +388,7 @@ class AbstractWrapper(object):
             aclib_status = self._ta_status
           
         if self.new_format:
-            aclib2_out_dict = {"status": aclib_status, "cost": self._ta_quality, "runtime": self._ta_runtime, "misc": self._ta_misc}
+            aclib2_out_dict = {"status": str(aclib_status), "cost": float(self._ta_quality), "runtime": float(self._ta_runtime), "misc": str(self._ta_misc)}
             print("Result of this algorithm run: %s" %(json.dumps(aclib2_out_dict)))
         
         sys.stdout.write("Result for ParamILS: %s, %s, %s, %s, %s" % (self._ta_status, str(self._ta_runtime), str(self._ta_runlength), str(self._ta_quality), str(self._seed)))
