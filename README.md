@@ -4,6 +4,15 @@ The generic wrapper is a base class to easily implement your own interface betwe
 
 The generic wrapper is developed and maintained by members of the [ML4AAD](http://www.ml4aad.org) Group at the University of Freiburg and the [Beta Lab](http://www.cs.ubc.ca/labs/beta/) of the university of British Columbia. 
 
+## INSTALLATION
+
+We provide a `setup.py` script which can be used to install generic wrapper as a package
+and which also installs all dependencies (including `runsolver`).
+
+```
+python setup.py install
+```
+
 ## USAGE
 
 The generic wrapper provides the interfaces to ParamILS and SMAC. Please see the [documentation of SMAC](http://www.cs.ubc.ca/labs/beta/Projects/SMAC/v2.10.03/manual.pdf) for an extensive description of the required interfaces.
