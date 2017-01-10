@@ -296,7 +296,7 @@ class AbstractWrapper(object):
         
         runsolver_cmd = []
         if self._runsolver != "None":
-            runsolver_cmd = [self._runsolver, "-M", self._mem_limit, "-C", self._cutoff,
+            runsolver_cmd = ["setsid", self._runsolver, "-M", self._mem_limit, "-C", self._cutoff,
                              "-w", "\"%s\"" %(self._watcher_file.name),
                              "-o",  "\"%s\"" %(self._solver_file.name)]
         
@@ -391,7 +391,7 @@ class AbstractWrapper(object):
             aclib2_out_dict = {"status": str(aclib_status), "cost": float(self._ta_quality), "runtime": float(self._ta_runtime), "misc": str(self._ta_misc)}
             print("Result of this algorithm run: %s" %(json.dumps(aclib2_out_dict)))
         
-        sys.stdout.write("Result for ParamILS: %s, %s, %s, %s, %s" % (self._ta_status, str(self._ta_runtime), str(self._ta_runlength), str(self._ta_quality), str(self._seed)))
+        sys.stdout.write("Result for ParamILS: %s, %.4f, %s, %s, %s" % (self._ta_status, self._ta_runtime, str(self._ta_runlength), str(self._ta_quality), str(self._seed)))
         if (len(self._ta_misc) > 0):
             sys.stdout.write(", %s" % (self._ta_misc))
         print('')
