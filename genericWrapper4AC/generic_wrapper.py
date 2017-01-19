@@ -347,10 +347,10 @@ class AbstractWrapper(object):
             self._ta_status = "TIMEOUT"
             self._ta_misc = "memory limit was exceeded"
            
-        cpu_pattern1 = re.compile('runsolver_cputime: (%s)' % (self.float_regex()))
+        cpu_pattern1 = re.compile('^runsolver_cputime: (%s)' % (self.float_regex()))
         cpu_match1 = re.search(cpu_pattern1, data)
             
-        cpu_pattern2 = re.compile('CPU time \\(s\\): (%s)' % (self.float_regex()))
+        cpu_pattern2 = re.compile('^CPU time \\(s\\): (%s)' % (self.float_regex()))
         cpu_match2 = re.search(cpu_pattern2, data)
 
         if (cpu_match1):
