@@ -304,7 +304,7 @@ class AbstractWrapper(object):
         
         runsolver_cmd = []
         if self._runsolver != "None":
-            runsolver_cmd = ["setsid", self._runsolver, "-M", self._mem_limit, "-C", self._cutoff,
+            runsolver_cmd = [self._runsolver, "-M", self._mem_limit, "-C", self._cutoff,
                              "-w", "\"%s\"" %(self._watcher_file.name),
                              "-o",  "\"%s\"" %(self._solver_file.name)]
         
