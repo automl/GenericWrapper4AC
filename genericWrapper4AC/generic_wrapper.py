@@ -96,6 +96,7 @@ class AbstractWrapper(object):
         self._tmp_dir_algo = None
 
         self._crashed_if_non_zero_status = True
+        self._use_local_tmp = False
         
         self._subprocesses = []
         
@@ -128,7 +129,7 @@ class AbstractWrapper(object):
             # Setup argument parser
             
             self.parser.add_argument("--runsolver-path", dest="runsolver", default=os.path.join(genericWrapper4AC.__path__[0],"binaries","runsolver"), help="path to runsolver binary (if None, the runsolver is deactivated)")
-            self.parser.add_argument("--temp-file-dir", dest="tmp_dir", default=".", help="directory for temporary files (relative to -exec-dir in SMAC scenario)")
+            self.parser.add_argument("--temp-file-dir", dest="tmp_dir", default=None, help="directory for temporary files (relative to -exec-dir in SMAC scenario)")
             self.parser.add_argument("--temp-file-dir-algo", dest="tmp_dir_algo", default=True, type=bool, help="create a directory for temporary files from target algo") #TODO: set default to False
             self.parser.add_argument("--mem-limit", dest="mem_limit", default=self._mem_limit, type=int, help="memory limit in MB")
             self.parser.add_argument("--internal", dest="internal", default=False, type=bool, help="skip calling an external target algorithm")
@@ -161,6 +162,13 @@ class AbstractWrapper(object):
                 self._runsolver = args.runsolver
                 self._mem_limit = args.mem_limit
             
+            if args.tmp_dir is None:
+                if "TMPDIR" in os.environ:
+                    args.tmp_dir = os.environ["TMPDIR"]
+                    self._use_local_tmp = True
+                else:
+                    args.tmp_dir = "."
+
             if not os.path.isdir(args.tmp_dir):
                 self._ta_status = "ABORT"
                 self._ta_misc = "temp directory is missing - should have been at %s." % (args.tmp_dir)
@@ -439,6 +447,9 @@ class AbstractWrapper(object):
             if (self._ta_status is not "ABORT" and self._ta_status is not "CRASHED"):
                 os.remove(self._watcher_file.name)
                 os.remove(self._solver_file.name)
+            elif self._use_local_tmp:
+                shutil.copy(self._watcher_file.name, ".")
+                shutil.copy(self._solver_file.name, ".")
                 
             if self._tmp_dir_algo:
                 shutil.rmtree(self._tmp_dir_algo)
