@@ -450,6 +450,8 @@ class AbstractWrapper(object):
             elif self._use_local_tmp:
                 shutil.copy(self._watcher_file.name, ".")
                 shutil.copy(self._solver_file.name, ".")
+                os.remove(self._watcher_file.name)
+                os.remove(self._solver_file.name)
                 
             if self._tmp_dir_algo:
                 shutil.rmtree(self._tmp_dir_algo)
