@@ -321,8 +321,9 @@ class AbstractWrapper(object):
             self._ta_misc = "execution failed: %s"  % (" ".join(map(str,runsolver_cmd)))
             self._exit_code = 1 
             sys.exit(1)
-        time.sleep(0.1) #for slow filesystems
+        time.sleep(0.2) #for slow filesystems
         self._solver_file.seek(0)
+        self._watcher_file.seek(0)
 
     def float_regex(self):
         return '[+-]?\d+(?:\.\d+)?(?:[eE][+-]\d+)?'
