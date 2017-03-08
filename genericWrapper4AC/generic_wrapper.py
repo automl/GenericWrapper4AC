@@ -338,7 +338,7 @@ class AbstractWrapper(object):
             return
         
         self.logger.debug("Reading runsolver output from %s" % (self._watcher_file.name))
-        data = str(self._watcher_file.read())
+        data = str(self._watcher_file.read().decode("utf8"))
 
         if (re.search('runsolver_max_cpu_time_exceeded', data) or re.search('Maximum CPU time exceeded', data)):
             self._ta_status = "TIMEOUT"
