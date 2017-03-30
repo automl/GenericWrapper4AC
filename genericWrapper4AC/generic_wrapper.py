@@ -508,6 +508,7 @@ class OArgumentParser(object):
         self.options = {}
         self.required = []
         self.args = Arguments()
+        self.logger = logging.getLogger("ArgumentParser")
         
     def add_argument(self, parameter_name, dest, default=None, help="", type=str, required=False):
         '''
