@@ -96,6 +96,7 @@ class AbstractWrapper(object):
         self._tmp_dir_algo = None
 
         self._crashed_if_non_zero_status = True
+        self._use_local_tmp = False
         
         self._subprocesses = []
         
@@ -128,7 +129,7 @@ class AbstractWrapper(object):
             # Setup argument parser
             
             self.parser.add_argument("--runsolver-path", dest="runsolver", default=os.path.join(genericWrapper4AC.__path__[0],"binaries","runsolver"), help="path to runsolver binary (if None, the runsolver is deactivated)")
-            self.parser.add_argument("--temp-file-dir", dest="tmp_dir", default=".", help="directory for temporary files (relative to -exec-dir in SMAC scenario)")
+            self.parser.add_argument("--temp-file-dir", dest="tmp_dir", default=None, help="directory for temporary files (relative to -exec-dir in SMAC scenario)")
             self.parser.add_argument("--temp-file-dir-algo", dest="tmp_dir_algo", default=True, type=bool, help="create a directory for temporary files from target algo") #TODO: set default to False
             self.parser.add_argument("--mem-limit", dest="mem_limit", default=self._mem_limit, type=int, help="memory limit in MB")
             self.parser.add_argument("--internal", dest="internal", default=False, type=bool, help="skip calling an external target algorithm")
@@ -161,6 +162,13 @@ class AbstractWrapper(object):
                 self._runsolver = args.runsolver
                 self._mem_limit = args.mem_limit
             
+            if args.tmp_dir is None:
+                if "TMPDIR" in os.environ:
+                    args.tmp_dir = os.environ["TMPDIR"]
+                    self._use_local_tmp = True
+                else:
+                    args.tmp_dir = "."
+
             if not os.path.isdir(args.tmp_dir):
                 self._ta_status = "ABORT"
                 self._ta_misc = "temp directory is missing - should have been at %s." % (args.tmp_dir)
@@ -321,8 +329,8 @@ class AbstractWrapper(object):
             self._ta_misc = "execution failed: %s"  % (" ".join(map(str,runsolver_cmd)))
             self._exit_code = 1 
             sys.exit(1)
-            
         self._solver_file.seek(0)
+        self._watcher_file.seek(0)
 
     def float_regex(self):
         return '[+-]?\d+(?:\.\d+)?(?:[eE][+-]\d+)?'
@@ -338,7 +346,7 @@ class AbstractWrapper(object):
             return
         
         self.logger.debug("Reading runsolver output from %s" % (self._watcher_file.name))
-        data = str(self._watcher_file.read())
+        data = str(self._watcher_file.read().decode("utf8"))
 
         if (re.search('runsolver_max_cpu_time_exceeded', data) or re.search('Maximum CPU time exceeded', data)):
             self._ta_status = "TIMEOUT"
@@ -347,10 +355,10 @@ class AbstractWrapper(object):
             self._ta_status = "TIMEOUT"
             self._ta_misc = "memory limit was exceeded"
            
-        cpu_pattern1 = re.compile('runsolver_cputime: (%s)' % (self.float_regex()))
+        cpu_pattern1 = re.compile('^runsolver_cputime: (%s)' % (self.float_regex()), re.MULTILINE)
         cpu_match1 = re.search(cpu_pattern1, data)
             
-        cpu_pattern2 = re.compile('CPU time \\(s\\): (%s)' % (self.float_regex()))
+        cpu_pattern2 = re.compile('^CPU time \\(s\\): (%s)' % (self.float_regex()), re.MULTILINE)
         cpu_match2 = re.search(cpu_pattern2, data)
 
         if (cpu_match1):
@@ -391,7 +399,7 @@ class AbstractWrapper(object):
             aclib2_out_dict = {"status": str(aclib_status), "cost": float(self._ta_quality), "runtime": float(self._ta_runtime), "misc": str(self._ta_misc)}
             print("Result of this algorithm run: %s" %(json.dumps(aclib2_out_dict)))
         
-        sys.stdout.write("Result for ParamILS: %s, %s, %s, %s, %s" % (self._ta_status, str(self._ta_runtime), str(self._ta_runlength), str(self._ta_quality), str(self._seed)))
+        sys.stdout.write("Result for ParamILS: %s, %.4f, %s, %s, %s" % (self._ta_status, self._ta_runtime, str(self._ta_runlength), str(self._ta_quality), str(self._seed)))
         if (len(self._ta_misc) > 0):
             sys.stdout.write(", %s" % (self._ta_misc))
         print('')
@@ -436,6 +444,11 @@ class AbstractWrapper(object):
                 self._solver_file.close()
 
             if (self._ta_status is not "ABORT" and self._ta_status is not "CRASHED"):
+                os.remove(self._watcher_file.name)
+                os.remove(self._solver_file.name)
+            elif self._use_local_tmp:
+                shutil.copy(self._watcher_file.name, ".")
+                shutil.copy(self._solver_file.name, ".")
                 os.remove(self._watcher_file.name)
                 os.remove(self._solver_file.name)
                 
