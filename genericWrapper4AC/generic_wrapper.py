@@ -353,6 +353,7 @@ class AbstractWrapper(object):
             # the watcher file can be corrupted and can failed to be read
             self._ta_exit_code = 0
             self.logger.warn("Failed to read runsolver's watcher file---trust own wc-time measurment")
+            return 
 
         if (re.search('runsolver_max_cpu_time_exceeded', data) or re.search('Maximum CPU time exceeded', data)):
             self._ta_status = "TIMEOUT"
