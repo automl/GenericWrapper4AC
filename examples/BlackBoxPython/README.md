@@ -5,7 +5,7 @@ Here, we want to optimize the Branin function, see `braninWrapper.BraninWrapper.
 It is a 2-dim function with inputs x1 and x2.
 
 As written in the general README,
-you have two provide two functions for the generic wrapper:
+you have to provide two functions for the generic wrapper:
 
   * `get_command_line_args()`
   * `process_results()`
