@@ -233,6 +233,11 @@ class AbstractWrapper(object):
             elif 'misc' in resultMap and self._ta_misc:
                 self._ta_misc +=  " - " + resultMap['misc']
                 
+            # if quality is still set to 999999999.0 and we use the new fromat,
+            # overwrite quality with runtime, since irace only looks at the cost field
+            if self.new_format and self._ta_quality == 999999999.0:
+                self._ta_quality = self._ta_runtime
+                
             # if still no status was determined, something went wrong and output files should be kept
             if self._ta_status is "EXTERNALKILL":
                 self._ta_status = "CRASHED"
