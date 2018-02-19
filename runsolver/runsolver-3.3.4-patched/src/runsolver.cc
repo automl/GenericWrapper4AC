@@ -473,8 +473,18 @@ private:
 	// when the solver uses less than cpuUsageThreshold % of the CPU,
 	// try to identify process of other users which use more than
 	// heavyProcessThreshold % of the CPU
-	static const float cpuUsageThreshold = 0.8; // % of CPU
-	static const float heavyProcessThreshold = 0.1; // % of CPU
+#ifdef __GNUC__
+#if __GNUC_PREREQ(6,0)
+// GCC Version >= 6.0
+	static constexpr float cpuUsageThreshold = 0.8f; // % of CPU
+	static constexpr float heavyProcessThreshold = 0.1f; // % of CPU
+#else
+// GCC Version < 6.0
+	static const float cpuUsageThreshold = 0.8f; // % of CPU
+	static const float heavyProcessThreshold = 0.1f; // % of CPU
+#endif
+#else
+#endif
 
 	pid_t childpid; // pid of the process we're watching
 	//Improperly synchronized so no longer used: bool solverIsRunning;
