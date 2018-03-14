@@ -33,7 +33,11 @@ This will run `MiniSat` on the instance `gzip_vc1071.cnf`, assuming that it is a
 
 The output of the wrapper call will include:
 
-`Result for ParamILS: SAT, 0.004, -1, -1, 42, SAT checker was not given; could not verify SAT`
+`Result for ParamILS: SUCCESS, 0.004, -1, -1, 42, SAT checker was not given; could not verify SAT`
 
-With this line, ParamILS/SMAC will know that `MiniSat` returned `SATISFIABLE` and needed 0.004 CPU seconds.
+With this line, ParamILS/SMAC will know that `MiniSat` returned successfully and needed 0.004 CPU seconds.
+
+The alternative call in the new format would be
+
+`python examples/MiniSAT/SATCSSCWrapper.py --script examples/MiniSAT/MiniSATWrapper.py --instance examples/MiniSAT/gzip_vc1071.cnf --cutoff 10 --seed 42 --config -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000`
  

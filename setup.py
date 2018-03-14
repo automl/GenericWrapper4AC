@@ -65,7 +65,7 @@ class InstallRunsolver(install):
 setuptools.setup(
     name='GenericWrapper4AC',
     description='Generic Wrapper to interface between algorithm configurators and algorithms to tune',
-    version='1.0.0',
+    version='2.0.0',
     packages=setuptools.find_packages(exclude=['test']),
     test_suite='nose.collector',
     cmdclass={'install': InstallRunsolver},

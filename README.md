@@ -34,6 +34,13 @@ See the docstrings and the examples for more details.
 
 For debugging reasons, the generic wrapper will not delete the output files of your algorithm if your algorithm crashed (or failed in any way). If your algorithm crashes very often, this can fill up your file system quickly.
 
+If your command line call includes "--config", the generic wrapper assumes that the new aclib call format will be used.
+
+```
+<executable> [<arg>] [<arg>] ... [--cutoff <cutoff time>] [--instance <instance name>] 
+[--seed <seed>] --config [-param_name_1 value_1] [-param_name_2 value_2] ...
+```
+
 ## Requirements
 
 Since we use the `runsolver` to limit resources, the generic wrapper can only be used on Linux systems.
