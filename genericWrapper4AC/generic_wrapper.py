@@ -182,12 +182,6 @@ class AbstractWrapper(object):
             
             self.new_format = "--config" in target_args
             
-            if self.new_format and len(target_args) < 5:
-                self._ta_status = "ABORT"
-                self._ta_misc = "some required TA parameters (instance, specifics, cutoff, runlength, seed) missing - was [%s]." % (" ".join(target_args))
-                self._exit_code = 1
-                sys.exit(1)
-                
             self._config_dict = self.build_parameter_dict(args, target_args)
             
             if args.tmp_dir_algo:
