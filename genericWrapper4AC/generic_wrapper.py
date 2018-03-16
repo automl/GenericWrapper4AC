@@ -75,7 +75,20 @@ class AbstractWrapper(object):
         self.parser = get_parser()
         self.args = None
 
-    def main(self):
+    def main(self, exit:bool=True):
+        '''
+            main method of the generic wrapper
+            1. parses cmd arguments; 
+            2. calls target algorithm wrapped by runsolver
+            3. parses outputs
+            4. terminates
+            
+            Arguments
+            ---------
+            exit: bool
+                exit with sys.exit at the end 
+            
+        '''
 
         signal.signal(signal.SIGTERM, signalHandler)
         signal.signal(signal.SIGQUIT, signalHandler)
@@ -132,10 +145,11 @@ class AbstractWrapper(object):
         except (KeyboardInterrupt, SystemExit):
             self.cleanup()
             self.print_result_string()
-            if self.data.exit_code:
-                sys.exit(self.data.exit_code)
-            else:
-                sys.exit(0)
+            if exit:
+                if self.data.exit_code:
+                    sys.exit(self.data.exit_code)
+                else:
+                    sys.exit(0)
 
     def set_tmpdir(self, tmp_dir):
         '''
@@ -163,14 +177,16 @@ class AbstractWrapper(object):
 
         return tmp_dir
 
-    def call_target(self, target_cmd):
+    def call_target(self, target_cmd: str):
         '''
             extends the target algorithm command line call with the runsolver
             and executes it
 
             Arguments
             --------
-                target_cmd: list of target cmd (from get_command_line_args)
+            target_cmd: str
+                target cmd (from get_command_line_args)
+                
         '''
         random_id = random.randint(0, 1000000)
         self._watcher_file = NamedTemporaryFile(
@@ -337,10 +353,6 @@ class AbstractWrapper(object):
             self.data.additional = "problems removing temporary files during cleanup."
         except AttributeError:
             pass  # in internal mode, these files are not generated
-
-        if self.data.status is "EXTERNALKILL":
-            self.data.status = "CRASHED"
-            self.data.exit_code = 42
 
     def get_command_line_args(self, runargs, config):
         '''

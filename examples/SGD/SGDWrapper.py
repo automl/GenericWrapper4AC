@@ -68,16 +68,18 @@ class SGDWrapper(AbstractWrapper):
         '''
         
         self.logger.debug("reading solver results from %s" % (filepointer.name))
-        try:
-            out_ = str(filepointer.read().decode('UTF-8')).replace("\n","")
-            return_value = float(out_) # assumption that the SGD script will only print the accuracy value
-            resultMap = {'status' : 'SUCCESS',
-             'quality' : return_value
-             }
-        except ValueError:
-            resultMap = {'status' : 'CRASHED',
-             'quality' : 1 # assumption minimization
-             }
+        for line in filepointer:
+            try:
+                out_ = str(line.decode('UTF-8')).replace("\n","")
+                return_value = float(out_)
+                resultMap = {'status' : 'SUCCESS',
+                 'quality' : return_value
+                 }
+                return resultMap
+            except ValueError:
+                resultMap = {'status' : 'CRASHED',
+                 'quality' : 1 # assumption minimization
+                 }
 
         return resultMap
 

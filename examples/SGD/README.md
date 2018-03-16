@@ -17,11 +17,11 @@ The `SGDWrapper.py` implements the required two functions:
   
 An example call of the wrapper would be:
 
-`python examples/SGD/SGDWrapper.py 0 0 5 0 9 -learning_rate constant -eta0 1`
+`python examples/SGD/SGDWrapper.py train 0 5 0 9 -learning_rate constant -eta0 1 -loss hinge -penalty l2 -alpha 0.0001 -learning_rate optimal -eta0 0.0 -n_iter 2`
 
 which is translated to 
 
-`python examples/SGD/sgd_ta.py random_state 9 eta0 1 learning_rate constant`
+`python examples/SGD/sgd_ta.py train random_state 9 learning_rate optimal eta0 0.0 loss hinge penalty l2 alpha 0.0001 n_iter 2`
 
 Please note that in contrast to the `BlackBoxPython` example, the resources of the SGD script is indeed limited with the runsolver (here 5 CPU seconds.)
 
