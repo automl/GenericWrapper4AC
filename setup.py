@@ -44,9 +44,8 @@ class InstallRunsolver(install):
                         os.path.join(TEST_DIRECTORY, 'runsolver'))
 
         # Copy the runsolver into the sources so it gets copied
-        shutil.move(os.path.join(RUNSOLVER_LOCATION, 'runsolver'),
+        shutil.copy(os.path.join(RUNSOLVER_LOCATION, 'runsolver'),
                     os.path.join(BINARIES_DIRECTORY, 'runsolver'))
-
 
         #install.do_egg_install(self)
         install.run(self)
