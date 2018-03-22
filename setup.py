@@ -6,32 +6,21 @@ import traceback
 import setuptools
 from setuptools.command.install import install
 
-RUNSOLVER_LOCATION = 'runsolver/runsolver-3.3.4-patched/src/'
-DOWNLOAD_DIRECTORY = os.path.join(os.path.dirname(__file__), '.downloads/')
+RUNSOLVER_LOCATION = os.path.join(os.path.dirname(__file__), 'runsolver',
+                                  'runsolver-3.3.4-patched', 'src')
 BINARIES_DIRECTORY = 'genericWrapper4AC/binaries'
+TEST_DIRECTORY = os.path.join(os.path.dirname(__file__), 'test',
+                              'test_binaries')
+
 
 class InstallRunsolver(install):
 
     def run(self):
-        try:
-            shutil.rmtree(DOWNLOAD_DIRECTORY)
-        except Exception:
-            #traceback.print_exc()
-            pass
-
-        try:
-            os.makedirs(DOWNLOAD_DIRECTORY)
-        except Exception:
-            #traceback.print_exc()
-            pass
-
-        shutil.copytree(RUNSOLVER_LOCATION,os.path.join(DOWNLOAD_DIRECTORY,"runsolver"))
-        runsolver_source_path = os.path.join(DOWNLOAD_DIRECTORY,"runsolver")
-
         # Build the runsolver
         sys.stdout.write('Building runsolver\n')
         cur_pwd = os.getcwd()
-        os.chdir(runsolver_source_path)
+        print(cur_pwd)
+        os.chdir(RUNSOLVER_LOCATION)
         subprocess.check_call('make')
         os.chdir(cur_pwd)
 
@@ -46,9 +35,18 @@ class InstallRunsolver(install):
         except Exception:
             pass
 
+        # Copy the runsolver into the test directory so tests can be run
+        try:
+            os.makedirs(TEST_DIRECTORY)
+        except Exception:
+            pass
+        shutil.copy(os.path.join(RUNSOLVER_LOCATION, 'runsolver'),
+                        os.path.join(TEST_DIRECTORY, 'runsolver'))
+
         # Copy the runsolver into the sources so it gets copied
-        shutil.move(os.path.join(runsolver_source_path, 'runsolver'),
+        shutil.move(os.path.join(RUNSOLVER_LOCATION, 'runsolver'),
                     os.path.join(BINARIES_DIRECTORY, 'runsolver'))
+
 
         #install.do_egg_install(self)
         install.run(self)
@@ -57,19 +55,15 @@ class InstallRunsolver(install):
             shutil.rmtree(BINARIES_DIRECTORY)
         except OSError:
             pass
-        try:
-            shutil.rmtree(DOWNLOAD_DIRECTORY)
-        except OSError:
-            pass
+
 
 setuptools.setup(
     name='GenericWrapper4AC',
     description='Generic Wrapper to interface between algorithm configurators and algorithms to tune',
     version='2.0.0',
     python_requires='>=3.5',
-    packages=setuptools.find_packages(exclude=['test']),
     test_suite='nose.collector',
-    tests_require=["nose", "scikit-learn"],
+    tests_require=["nose", "numpy", "scipy", "scikit-learn"],
     cmdclass={'install': InstallRunsolver},
     include_package_data=True,
     package_data={"genericWrapper4AC": ["binaries/runsolver"]},

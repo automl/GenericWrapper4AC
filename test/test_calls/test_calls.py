@@ -6,13 +6,20 @@ import genericWrapper4AC
 from examples.MiniSAT.SATCSSCWrapper import SatCSSCWrapper
 from examples.SGD.SGDWrapper import SGDWrapper
 
+
 class TestCalls(unittest.TestCase):
+
+    def __init__(self):
+        self.runsolver = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "test_binaries", "runsolver")
 
     def test_minisat_old(self):
 
         wrapper = SatCSSCWrapper()
 
         sys.argv = "examples/MiniSAT/SATCSSCWrapper.py --script examples/MiniSAT/MiniSATWrapper.py examples/MiniSAT/gzip_vc1071.cnf SAT 10 0 42 -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000"
+        sys.argv += " --runsolver-path " + self.runsolver
         sys.argv = sys.argv.split(" ")
 
         wrapper.main(exit=False)
@@ -27,7 +34,8 @@ class TestCalls(unittest.TestCase):
 
         wrapper = SatCSSCWrapper()
 
-        sys.argv = "examples/MiniSAT/SATCSSCWrapper.py --script examples/MiniSAT/MiniSATWrapper.py --instance examples/MiniSAT/gzip_vc1071.cnf --cutoff 10 --seed 42 --config -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000"
+        sys.argv = "python examples/MiniSAT/SATCSSCWrapper.py --script examples/MiniSAT/MiniSATWrapper.py --instance examples/MiniSAT/gzip_vc1071.cnf --cutoff 10 --seed 42 --config -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000"
+        sys.argv += " --runsolver-path " + self.runsolver
         sys.argv = sys.argv.split(" ")
 
         wrapper.main(exit=False)
@@ -46,6 +54,7 @@ class TestCalls(unittest.TestCase):
         wrapper = SGDWrapper()
 
         sys.argv = "examples/SGD/SGDWrapper.py train 0 5 0 9 -learning_rate constant -eta0 1 -loss hinge -penalty l2 -alpha 0.0001 -learning_rate optimal -eta0 0.0 -n_iter 2"
+        sys.argv += " --runsolver-path " + self.runsolver
         sys.argv = sys.argv.split(" ")
 
         wrapper.main(exit=False)
@@ -65,6 +74,7 @@ class TestCalls(unittest.TestCase):
         wrapper = SGDWrapper()
 
         sys.argv = "examples/SGD/SGDWrapper.py --instance train --seed 9 --config -learning_rate constant -eta0 1 -loss hinge -penalty l2 -alpha 0.0001 -learning_rate optimal -eta0 0.0 -n_iter 2"
+        sys.argv += " --runsolver-path " + self.runsolver
         sys.argv = sys.argv.split(" ")
 
         wrapper.main(exit=False)
