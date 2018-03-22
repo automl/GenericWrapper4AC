@@ -68,6 +68,7 @@ setuptools.setup(
     version='2.0.0',
     packages=setuptools.find_packages(exclude=['test']),
     test_suite='nose.collector',
+    tests_require=["nose", "scikit-learn"],
     cmdclass={'install': InstallRunsolver},
     include_package_data=True,
     package_data={"genericWrapper4AC": ["binaries/runsolver"]},

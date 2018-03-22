@@ -1,8 +1,8 @@
 #Wrapper for SGD
 
-This is a more advanced example for optimizing a black box function (here SGD on a fixed data set).
+This is a more advanced example for optimizing a black box function (here SGD on a fixed data set) which has an additional requirement: scikit-learn.
 
-The target algorithm is a simple python script `sgd_ta.py` which loads the iris data set from sklearn, reads the parameter configuration, fits a SGD classifier and prints the accuracy on a holdout set.
+The target algorithm is a simple python script `sgd_ta.py` which loads the iris data set from scikit-learn, reads the parameter configuration, fits a SGD classifier and prints the accuracy on a holdout set.
 
 The script supports three kind of "instances":
 

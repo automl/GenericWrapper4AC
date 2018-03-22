@@ -47,7 +47,8 @@ Since we use the `runsolver` to limit resources, the generic wrapper can only be
 
 ## Examples
 
-Please see `./examples/` for some examples with black box functions (no problem instances included) and examples of algorithms with problem instances (i.e., SAT solving). 
+Please see `./examples/` for some examples with black box functions (no problem instances included) and examples of algorithms with problem instances (i.e., SAT solving).
+Each example comes with its own README with further details.
 
 We provide a more extensive tutorial for "How to write your own Wrapper" with using the GenericWrapper [here](http://aclib.net/smac/tutorial/genericwrapper/).
 

@@ -68,6 +68,11 @@ class SGDWrapper(AbstractWrapper):
         '''
         
         self.logger.debug("reading solver results from %s" % (filepointer.name))
+
+        # If solver result file is empty, we also assume a crash
+        resultMap = {'status': 'CRASHED',
+                     'quality': 1  # assumption minimization
+                     }
         for line in filepointer:
             try:
                 out_ = str(line.decode('UTF-8')).replace("\n","")
@@ -77,9 +82,7 @@ class SGDWrapper(AbstractWrapper):
                  }
                 return resultMap
             except ValueError:
-                resultMap = {'status' : 'CRASHED',
-                 'quality' : 1 # assumption minimization
-                 }
+                pass
 
         return resultMap
 
