@@ -66,6 +66,7 @@ setuptools.setup(
     name='GenericWrapper4AC',
     description='Generic Wrapper to interface between algorithm configurators and algorithms to tune',
     version='2.0.0',
+    python_requires='>=3.5',
     packages=setuptools.find_packages(exclude=['test']),
     test_suite='nose.collector',
     tests_require=["nose", "scikit-learn"],
