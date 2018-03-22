@@ -11,6 +11,9 @@ and which also installs all dependencies (including `runsolver`).
 
 ```
 python setup.py install
+
+# To test installation run afterwards
+python setup.py test
 ```
 
 ## USAGE

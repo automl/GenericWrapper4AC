@@ -9,10 +9,8 @@ from genericWrapper4AC.data.data import Data
 
 class TestResourceLimits(unittest.TestCase):
 
-    def __init__(self):
-        self.runsolver = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)),
-            "test_binaries", "runsolver")
+    runsolver = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                             "test_binaries", "runsolver")
 
     def test_memlimit(self):
 

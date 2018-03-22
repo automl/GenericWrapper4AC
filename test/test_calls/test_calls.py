@@ -9,10 +9,8 @@ from examples.SGD.SGDWrapper import SGDWrapper
 
 class TestCalls(unittest.TestCase):
 
-    def __init__(self):
-        self.runsolver = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)),
-            "test_binaries", "runsolver")
+    runsolver = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                             "test_binaries", "runsolver")
 
     def test_minisat_old(self):
 
