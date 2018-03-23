@@ -1,3 +1,5 @@
+import os
+
 def get_command_line_cmd(runargs, config):
     '''
     @contact:    lindauer@informatik.uni-freiburg.de, fh@informatik.uni-freiburg.de
@@ -15,7 +17,7 @@ def get_command_line_cmd(runargs, config):
     Returns:
         A command call list to execute the target algorithm.
     '''
-    solver_binary = "examples/MiniSAT/minisat"
+    solver_binary = os.path.join(os.path.dirname(__file__), "minisat")
     cmd = "%s -rnd-seed=%d" %(solver_binary, runargs["seed"])       
     for name, value in config.items():
         cmd += " %s=%s" %(name,  value)

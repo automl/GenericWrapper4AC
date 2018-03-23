@@ -134,7 +134,7 @@ class AbstractWrapper(object):
             elif 'misc' in resultMap:
                 self.data.additional += "; " + resultMap['misc']
 
-            # if quality is still set to 2**32 - 1 and we use the new fromat,
+            # if quality is still set to 2**32 - 1 and we use the new format,
             # overwrite quality with runtime, since irace only looks at the
             # cost field
             if self.data.new_format and self.data.cost == 2**32 - 1:
