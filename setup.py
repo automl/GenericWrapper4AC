@@ -19,7 +19,7 @@ class InstallRunsolver(install):
         # Build the runsolver
         sys.stdout.write('Building runsolver\n')
         cur_pwd = os.getcwd()
-        print(cur_pwd)
+
         os.chdir(RUNSOLVER_LOCATION)
         subprocess.check_call('make')
         os.chdir(cur_pwd)

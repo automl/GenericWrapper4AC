@@ -2,15 +2,16 @@ import unittest
 import sys
 import os
 
-import genericWrapper4AC
 from examples.MiniSAT.SATCSSCWrapper import SatCSSCWrapper
 from examples.SGD.SGDWrapper import SGDWrapper
 
 
 class TestCalls(unittest.TestCase):
 
-    runsolver = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             "test_binaries", "runsolver")
+    def setUp(self):
+        self.runsolver = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "test_binaries", "runsolver")
 
     def test_minisat_old(self):
 

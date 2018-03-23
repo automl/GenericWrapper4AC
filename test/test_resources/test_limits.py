@@ -1,16 +1,16 @@
 import unittest
-import sys
 import os
 
-import genericWrapper4AC
 from genericWrapper4AC.generic_wrapper import AbstractWrapper
 from genericWrapper4AC.data.data import Data
 
 
 class TestResourceLimits(unittest.TestCase):
 
-    runsolver = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             "test_binaries", "runsolver")
+    def setUp(self):
+        self.runsolver = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "test_binaries", "runsolver")
 
     def test_memlimit(self):
 
