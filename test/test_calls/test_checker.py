@@ -3,7 +3,7 @@ import io
 import os
 import tempfile
 
-from examples.MiniSAT.SATCSSCWrapper import SatCSSCWrapper
+from genericWrapper4AC.domain_specific.satwrapper import SatWrapper
 from genericWrapper4AC.argparser.parse import parse
 
 
@@ -44,20 +44,23 @@ CPU time              : 0.008 s
         self.call = self.call.split(" ")
 
         # Add a solubility file
-        self.sat_sol_file = tempfile.TemporaryFile(mode="w+")
+        self.sat_sol_file = tempfile.NamedTemporaryFile(mode="w+")
         self.sat_sol_file.write(
             "examples/MiniSAT/gzip_vc1071.cnf SATISFIABLE")
+        self.sat_sol_file.flush()
 
-        self.unsat_sol_file = tempfile.TemporaryFile(mode="w+")
+        self.unsat_sol_file = tempfile.NamedTemporaryFile(mode="w+")
         self.unsat_sol_file.write(
             "examples/MiniSAT/gzip_vc1071.cnf UNSATISFIABLE")
+        self.unsat_sol_file.flush()
 
-        self.unknown_sol_file = tempfile.TemporaryFile(mode="w+")
+        self.unknown_sol_file = tempfile.NamedTemporaryFile(mode="w+")
         self.unknown_sol_file.write(
             "examples/MiniSAT/gzip_vc1071.cnf UNKNOWN")
+        self.unknown_sol_file.flush()
 
     def parse_results(self, solver, specific, sol_file):
-        wrapper = SatCSSCWrapper()
+        wrapper = SatWrapper()
         wrapper.data, wrapper.args = parse(cmd_arguments=self.call,
                                            parser=wrapper.parser)
         if sol_file == "SATISFIABLE":
@@ -112,14 +115,13 @@ CPU time              : 0.008 s
         res_map = self.parse_results(solver="SATISFIABLE",
                                      specific="UNKNOWN",
                                      sol_file="UNSATISFIABLE")
-        self.assertEqual(res_map["status"], "SAT")
-        # TODO: Shouldn't this raise an error?
+        self.assertEqual(res_map["status"], "CRASHED", res_map["misc"])
 
         # SAT UNSAT None
         res_map = self.parse_results(solver="SATISFIABLE",
                                      specific="UNSATISFIABLE",
                                      sol_file="UNKNOWN")
-        # TODO: Shouldn't this raise an error?
+        self.assertEqual(res_map["status"], "CRASHED", res_map["misc"])
 
     def test_UNSAT_but_SAT(self):
         # RES SPECIFIC SOLFILE
@@ -127,10 +129,10 @@ CPU time              : 0.008 s
         res_map = self.parse_results(solver="UNSATISFIABLE",
                                      specific="UNKNOWN",
                                      sol_file="SATISFIABLE")
-        # TODO: Shouldn't this raise an error?
+        self.assertEqual(res_map["status"], "CRASHED", res_map["misc"])
 
         # UNSAT SAT None
         res_map = self.parse_results(solver="UNSATISFIABLE",
                                      specific="SATISFIABLE",
                                      sol_file="UNKNOWN")
-        # TODO: Shouldn't this raise an error?
+        self.assertEqual(res_map["status"], "CRASHED", res_map["misc"])
