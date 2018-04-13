@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 
-from examples.MiniSAT.SATCSSCWrapper import SatCSSCWrapper
+from examples.MiniSAT.MiniSATWrapper import MiniSATWrapper
 from examples.SGD.SGDWrapper import SGDWrapper
 
 
@@ -15,9 +15,9 @@ class TestCalls(unittest.TestCase):
 
     def test_minisat_old(self):
 
-        wrapper = SatCSSCWrapper()
+        wrapper = MiniSATWrapper()
 
-        sys.argv = "examples/MiniSAT/SATCSSCWrapper.py --script examples/MiniSAT/MiniSATWrapper.py examples/MiniSAT/gzip_vc1071.cnf SAT 10 0 42 -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000"
+        sys.argv = "examples/MiniSAT/SATCSSCWrapper.py examples/MiniSAT/gzip_vc1071.cnf SAT 10 0 42 -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000"
         sys.argv += " --runsolver-path " + self.runsolver
         sys.argv = sys.argv.split(" ")
 
@@ -31,9 +31,9 @@ class TestCalls(unittest.TestCase):
         
     def test_minisat_new(self):
 
-        wrapper = SatCSSCWrapper()
+        wrapper = MiniSATWrapper()
 
-        sys.argv = "python examples/MiniSAT/SATCSSCWrapper.py --script examples/MiniSAT/MiniSATWrapper.py --instance examples/MiniSAT/gzip_vc1071.cnf --cutoff 10 --seed 42 --config -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000"
+        sys.argv = "python examples/MiniSAT/SATCSSCWrapper.py --instance examples/MiniSAT/gzip_vc1071.cnf --cutoff 10 --seed 42 --config -rnd-freq 0 -var-decay 0.001 -cla-decay 0.001 -gc-frac 0.000001 -rfirst 1000"
         sys.argv += " --runsolver-path " + self.runsolver
         sys.argv = sys.argv.split(" ")
 
