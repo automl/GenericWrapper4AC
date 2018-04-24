@@ -57,26 +57,31 @@ class SatWrapper(AbstractWrapper):
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
         self.logger.debug("reading solver results from %s" % (filepointer.name))
-        data = str(filepointer.read().decode("utf8"))
+        data = filepointer.read()
+        try:
+            data = str(data.decode("utf8"))
+        except AttributeError:
+            pass    
+        
         resultMap = {}
+        
+        resultMap['misc'] = ""
         
         if re.search('UNSATISFIABLE', data):
             resultMap['status'] = 'UNSAT'
             
             # verify UNSAT via external knowledge
-            if self.inst_specific in ["SAT", "UNSAT"] and  self.inst_specific == "SAT":
+            if self.data.specifics in ["SAT", "10", "SATISFIABLE"]:
                 resultMap['status'] = 'CRASHED'
-                resultMap['misc'] = "Instance is SAT but UNSAT was reported"
+                resultMap['misc'] = "according to instance specific, instance is SAT but UNSAT was reported"
             elif not self.args.solubility_file:
-                resultMap['misc'] = "solubility file was not given; could not verify UNSAT" 
+                resultMap['misc'] += "; solubility file was not given; could not verify UNSAT" 
             elif not os.path.isfile(self.args.solubility_file):
-                resultMap['misc'] = "have not found %s; could not verify UNSAT" % (self.args.solubility_file)
-            elif not self._verify_UNSAT():
+                resultMap['misc'] += "; have not found %s; could not verify UNSAT" % (self.args.solubility_file)
+            elif not self._verify_via_solubility_file(sol="UNSAT"): # use solubility file
                 resultMap['status'] = 'CRASHED'
-                resultMap['misc'] = "Instance is SAT but UNSAT was reported"
-            if(self._specifics == "SATISFIABLE" or self._specifics == "10"):
-                resultMap['status'] = 'CRASHED'
-                resultMap['misc'] = "SOLVER BUG: instance is SATISFIABLE but solver claimed it is UNSATISFIABLE"
+                resultMap['misc'] += "; according to solubility file, instance is SAT but UNSAT was reported"
+                
         elif re.search('SATISFIABLE', data):
             resultMap['status'] = 'SAT'
                
@@ -88,18 +93,27 @@ class SatWrapper(AbstractWrapper):
                     break
 
             # verify SAT
-            if self.inst_specific in ["SAT", "UNSAT"] and  self.inst_specific == "UNSAT":
+            if self.data.specifics in ["UNSAT", "20", "UNSATISFIABLE"] :
                 resultMap['status'] = 'CRASHED'
-                resultMap['misc'] = "Instance is UNSAT but SAT was reported"
-            elif not self.args.sat_checker:
-                resultMap['misc'] = "SAT checker was not given; could not verify SAT"
+                resultMap['misc'] = "; according to instance specific, instance is UNSAT but SAT was reported"
+            elif not self.args.solubility_file:
+                resultMap['misc'] += "; solubility file was not given; could not verify SAT" 
+            elif not os.path.isfile(self.args.solubility_file):
+                resultMap['misc'] += "; have not found %s; could not verify SAT" % (self.args.solubility_file)
+            elif not self._verify_via_solubility_file(sol="SAT"): # use solubility file
+                resultMap['status'] = 'CRASHED'
+                resultMap['misc'] += "; according to solubility file, instance is UNSAT but SAT was reported"
+                
+                
+            if not self.args.sat_checker:
+                resultMap['misc'] += "; SAT checker was not given; could not verify SAT"
             elif not os.path.isfile(self.args.sat_checker):
-                resultMap['misc'] = "have not found %s; could not verify SAT" % (self.args.sat_checker)
+                resultMap['misc'] += "; have not found %s; could not verify SAT" % (self.args.sat_checker)
             elif model is None:
-                resultMap['misc'] = "print of solution was probably incomplete because of runsolver SIGTERM/SIGKILL"
+                resultMap['misc'] += "; print of solution was probably incomplete because of runsolver SIGTERM/SIGKILL"
                 resultMap['status'] = 'TIMEOUT'
             elif not self._verify_SAT(model, filepointer):
-                # fix: race condiction between SIGTERM of runsolver and print of solution
+                # fix: race condition between SIGTERM of runsolver and print of solution
                 if self._ta_status == "TIMEOUT":
                     resultMap['status'] = 'TIMEOUT'
                     resultMap['misc'] = 'print of solution was probably incomplete because of runsolver SIGTERM/SIGKILL'
@@ -108,10 +122,6 @@ class SatWrapper(AbstractWrapper):
                     resultMap['misc'] = "SOLVER BUG: solver returned a wrong model"
                     # save command line call
          
-            if(self._specifics == "UNSATISFIABLE" or self._specifics == "20"):
-                resultMap['status'] = 'CRASHED'
-                resultMap['misc'] = "SOLVER BUG: instance is UNSATISFIABLE but solver claimed it is SATISFIABLE"
-            
         elif re.search('s UNKNOWN', data):
             resultMap['status'] = 'TIMEOUT'
             resultMap['misc'] = "Found s UNKNOWN line - interpreting as TIMEOUT"
@@ -142,9 +152,14 @@ class SatWrapper(AbstractWrapper):
                 return False
         return True  # should never happen
 
-    def _verify_UNSAT(self):
+    def _verify_via_solubility_file(self, sol):
         '''
             looks in <self.args.solubility_file> whether it is already known that the instance is UNSAT
+            
+            Args:
+                sol: ["SAT", "UNSAT"]
+                claimed status
+            
             Returns:
                 False if the instance is known as SAT
                 True otherwise
@@ -152,15 +167,17 @@ class SatWrapper(AbstractWrapper):
         
         with open(self.args.solubility_file) as fp:
             for line in fp:
-                if line.startswith(self._instance):
+                if line.startswith(self.data.instance):
                     line = line.strip("\n")
                     status = line.split(" ")[1]
-                    if status == "SATISFIABLE":
+                    if status in ["SAT", "SATISFIABLE"] and sol=="UNSAT":
+                        return False
+                    elif status in ["UNSAT", "UNSATISFIABLE"] and sol=="SAT":
                         return False
                     else:
-                        self.logger.debug("Verified UNSAT")
+                        self.logger.debug("Verified by solubility file")
                         return True
-        self.logger.debug("Could not find file to verify UNSAT")      
+        self.logger.debug("Could not find instance in solubility file")      
         return True
         
 
