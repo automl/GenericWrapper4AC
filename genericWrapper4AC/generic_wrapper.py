@@ -112,6 +112,7 @@ class AbstractWrapper(object):
         self._ta_quality = 999999999.0
         self._ta_exit_code = None
         self._ta_misc = ""
+        self.new_format = False
         
 
     def main(self, argv=None): 
