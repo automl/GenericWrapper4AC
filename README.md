@@ -16,6 +16,8 @@ python setup.py install
 python setup.py test
 ```
 
+NOTE: GenericWrapper4AC is also available on pypi but the installation of the runsolver fails using pip. We are still looking into this issue.
+
 ## USAGE
 
 The generic wrapper provides the interfaces to ParamILS and SMAC. Please see the [documentation of SMAC](http://www.cs.ubc.ca/labs/beta/Projects/SMAC/v2.10.03/manual.pdf) for an extensive description of the required interfaces.
