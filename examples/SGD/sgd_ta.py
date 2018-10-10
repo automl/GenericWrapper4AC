@@ -14,19 +14,20 @@ import sys
 
 from sklearn.linear_model import SGDClassifier
 from sklearn.datasets import load_iris, load_digits
-from sklearn import cross_validation
+from sklearn.model_selection import train_test_split, KFold
 
 data = load_iris()
 #data = load_digits()
 
 if sys.argv[1] == "train":
-    X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(data.data, data.target, test_size=0.25, random_state=0)
-    X_train, X_valid, y_train, y_valid = cross_validation.train_test_split(X_train_f, y_train_f, test_size=0.25, random_state=0)
+    X_train_f, X_test, y_train_f, y_test = train_test_split(data.data, data.target, test_size=0.25, random_state=0)
+    X_train, X_valid, y_train, y_valid = train_test_split(X_train_f, y_train_f, test_size=0.25, random_state=0)
 elif sys.argv[1] == "test":
-    X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(data.data, data.target, test_size=0.25, random_state=0)
+    X_train_f, X_test, y_train_f, y_test = train_test_split(data.data, data.target, test_size=0.25, random_state=0)
 elif sys.argv[1][:2] == "cv":
-    X_train_f, X_test, y_train_f, y_test = cross_validation.train_test_split(data.data, data.target, test_size=0.25, random_state=0)
-    kfs = [kf for kf in cross_validation.KFold(n=X_train_f.shape[0], n_folds=10, shuffle=True, random_state=1)]
+    X_train_f, X_test, y_train_f, y_test = train_test_split(data.data, data.target, test_size=0.25, random_state=0)
+    kf = KFold(n_splits=10, shuffle=True, random_state=1)
+    kfs = [kf for kf in kf.split(X_train_f)]
     cv = int(sys.argv[1][2:]) - 1
     X_train = X_train_f[kfs[cv][0]]
     y_train = y_train_f[kfs[cv][0]]
@@ -69,7 +70,7 @@ sgd = SGDClassifier(random_state=random_state,
                     alpha=alpha,
                     learning_rate=learning_rate,
                     eta0=eta0,
-                    n_iter=n_iter)    
+                    max_iter=n_iter)    
     
 #print(sgd.loss, sgd.penalty, sgd.alpha, sgd.learning_rate, sgd.eta0)
         
