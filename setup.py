@@ -53,6 +53,7 @@ class InstallRunsolver(install):
         try:
             shutil.rmtree(BINARIES_DIRECTORY)
         except OSError:
+            sys.stderr.write('Failed to delete %s\n' %(BINARIES_DIRECTORY))
             pass
 
 
@@ -60,15 +61,16 @@ setuptools.setup(
     name='GenericWrapper4AC',
     description='Generic Wrapper to interface between algorithm configurators and algorithms to tune',
     version='2.0.0',
+    packages=setuptools.find_packages(exclude=['test']),
     python_requires='>=3.5',
     test_suite='nose.collector',
     tests_require=["nose", "numpy", "scipy", "scikit-learn"],
     cmdclass={'install': InstallRunsolver},
     include_package_data=True,
     package_data={"genericWrapper4AC": ["binaries/runsolver"]},
-    author='Marius Lindauer',
+    author='Marius Lindauer and Katharina Eggensperger',
     author_email='lindauer@informatik.uni-freiburg.de',
     license='BSD',
     platforms=['Linux'],
     classifiers=[],
-    url='www.ml4aad.org')
+    url='www.automl.org')
