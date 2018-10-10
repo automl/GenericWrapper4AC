@@ -2,7 +2,7 @@
 
 The generic wrapper is a base class to easily implement your own interface between your algorithm and an algorithm configurator (such as ParamILS or SMAC).
 
-The generic wrapper is developed and maintained by members of the [ML4AAD](http://www.ml4aad.org) Group at the University of Freiburg and the [Beta Lab](http://www.cs.ubc.ca/labs/beta/) of the university of British Columbia. 
+The generic wrapper is developed and maintained by members of the [AutoML](http://www.automl.org) Group at the University of Freiburg and the [Beta Lab](http://www.cs.ubc.ca/labs/beta/) of the university of British Columbia. 
 
 ## INSTALLATION
 
