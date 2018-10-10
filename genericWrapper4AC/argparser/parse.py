@@ -9,7 +9,7 @@ import os
 import typing
 import genericWrapper4AC
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 
 from genericWrapper4AC.data.data import Data
 
@@ -21,7 +21,8 @@ def get_parser():
     '''
 
     parser = ArgumentParser(
-        formatter_class=ArgumentDefaultsHelpFormatter, allow_abbrev=False)
+        formatter_class=ArgumentDefaultsHelpFormatter, allow_abbrev=False,
+        add_help=False)
 
     parser.add_argument("--runsolver-path", dest="runsolver", default=os.path.join(genericWrapper4AC.__path__[
                         0], "binaries", "runsolver"), help="path to runsolver binary (if None, the runsolver is deactivated)")
@@ -31,6 +32,9 @@ def get_parser():
                         default=3072, type=int, help="memory limit in MB")
     parser.add_argument("--max_quality", dest="max_quality", default=None,
                         help="maximal quality of unsuccessful runs with timeouts or crashes")
+    # deactive -h such that 'h' can be a parameter of the target algorithm
+    parser.add_argument('--help', action='help', default=SUPPRESS,
+                        help='Show this help message and exit.')
 
     return parser
 
@@ -85,6 +89,7 @@ def parse(cmd_arguments: typing.List[str], parser:ArgumentParser):
 
     d.runsolver = main_args.runsolver
     d.tmp_dir = main_args.tmp_dir
+    d.mem_limit = main_args.mem_limit
     if main_args.max_quality is not None:
         d.max_quality = main_args.max_quality
 

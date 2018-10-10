@@ -105,7 +105,8 @@ class AbstractWrapper(object):
             "specifics": self.data.specifics,
             "cutoff": self.data.cutoff,
             "runlength": self.data.runlength,
-            "seed": self.data.seed
+            "seed": self.data.seed,
+            "tmp": self.data.tmp_dir
         }
 
         try:
