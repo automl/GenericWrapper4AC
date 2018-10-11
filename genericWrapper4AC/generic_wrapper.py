@@ -19,6 +19,7 @@ import json
 import logging
 import re
 import traceback
+import tempfile
 
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
@@ -70,7 +71,7 @@ class AbstractWrapper(object):
 
         self.data = None
 
-        self._DELAY2KILL = 2
+        self._DELAY2KILL = 1
 
         self.parser = get_parser()
         self.args = None
@@ -96,7 +97,7 @@ class AbstractWrapper(object):
 
         # returns genericWrapper4AC.data.data.Data
         self.data, self.args = parse(cmd_arguments=sys.argv, parser=self.parser)
-        self.data.tmp_dir = self.set_tmpdir(tmp_dir=self.data.tmp_dir)
+        self.data.tmp_dir, algo_temp_dir = self.set_tmpdir(tmp_dir=self.data.tmp_dir)
 
         # because of legacy reasons,
         # we still pass a dictionary to get_command_line_args
@@ -106,7 +107,7 @@ class AbstractWrapper(object):
             "cutoff": self.data.cutoff,
             "runlength": self.data.runlength,
             "seed": self.data.seed,
-            "tmp": self.data.tmp_dir
+            "tmp": algo_temp_dir.name
         }
 
         try:
@@ -176,7 +177,10 @@ class AbstractWrapper(object):
             self._exit_code = 1
             sys.exit(1)
 
-        return tmp_dir
+        # create tmp dir for target algorithm files
+        algo_tmp_dir = tempfile.TemporaryDirectory(dir=tmp_dir)
+
+        return tmp_dir, algo_tmp_dir
 
     def call_target(self, target_cmd: str):
         '''
