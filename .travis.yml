@@ -3,7 +3,7 @@ language: python
 addons:
   apt:
     packages:
-    - libnuma-dev
+    - numactl
 
 matrix:
 
