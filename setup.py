@@ -7,7 +7,7 @@ import setuptools
 from setuptools.command.install import install
 
 RUNSOLVER_LOCATION = os.path.join(os.path.dirname(__file__), 'runsolver',
-                                  'runsolver-3.3.4-patched', 'src')
+                                  'runsolver-3.4.0', 'src')
 BINARIES_DIRECTORY = 'genericWrapper4AC/binaries'
 TEST_DIRECTORY = os.path.join(os.path.dirname(__file__), 'test',
                               'test_binaries')
