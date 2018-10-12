@@ -25,6 +25,7 @@ before_install:
   - source activate testenv
   - conda install --yes -c valkyriesystemscorporation libnuma 
   - which g++
+  - which gcc
 
 install:
   - pip install pep8 codecov
