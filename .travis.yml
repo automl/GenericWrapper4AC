@@ -1,5 +1,10 @@
 language: python
 
+addons:
+  apt:
+    sources:
+    - libnuma-dev
+
 matrix:
 
   include:
@@ -21,18 +26,10 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - if [[ `which conda` ]]; then echo 'Conda installation successful'; else exit 1; fi
-  - conda create -n testenv --yes python=$PYTHON_VERSION pip wheel nose gxx_linux-64 gcc_linux-64
+  - conda create -n testenv --yes python=$PYTHON_VERSION pip wheel nose #gxx_linux-64 gcc_linux-64
   - source activate testenv
-  - conda install --yes gxx_linux-64 gcc_linux-64
-  - conda install --yes -c valkyriesystemscorporation libnuma 
-  - which g++
-  - which gcc
 
 install:
-  - conda install --yes gxx_linux-64 gcc_linux-64
-  - conda install --yes -c valkyriesystemscorporation libnuma 
-  - which g++
-  - which gcc
   - pip install pep8 codecov
   - pip install nose numpy scipy scikit-learn
   - python setup.py install
