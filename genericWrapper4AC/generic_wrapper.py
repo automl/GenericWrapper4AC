@@ -133,6 +133,8 @@ class AbstractWrapper(object):
                 self.data.time = resultMap['runtime']
             if 'quality' in resultMap:
                 self.data.cost = resultMap['quality']
+            if 'cost' in resultMap: # overrides quality
+                self.data.cost = resultMap['cost']
             elif 'misc' in resultMap:
                 self.data.additional += "; " + resultMap['misc']
 
