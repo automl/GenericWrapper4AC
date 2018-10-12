@@ -17,7 +17,7 @@ before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
 
 before_install:
-  - sudo apt-get install -y libxml2-dev
+  - sudo apt-get install -y libnuma-dev
   - wget $MINICONDA_URL -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
