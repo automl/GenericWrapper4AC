@@ -1,5 +1,10 @@
 language: python
 
+addons:
+  apt:
+    packages:
+    - libnuma-dev
+
 matrix:
 
   include:
@@ -25,7 +30,6 @@ before_install:
   - source activate testenv
 
 install:
-  - conda install -y -c valkyriesystemscorporation libnuma 
   - pip install pep8 codecov
   - pip install nose numpy scipy scikit-learn
   - python setup.py install
