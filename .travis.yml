@@ -1,10 +1,5 @@
 language: python
 
-addons:
-  apt:
-    packages:
-    - numactl
-
 matrix:
 
   include:
@@ -27,8 +22,9 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - if [[ `which conda` ]]; then echo 'Conda installation successful'; else exit 1; fi
   - conda create -n testenv --yes python=$PYTHON_VERSION pip wheel nose gxx_linux-64 gcc_linux-64
-  - conda install --yes -c valkyriesystemscorporation libnuma 
   - source activate testenv
+  - conda install --yes -c valkyriesystemscorporation libnuma 
+  - which g++
 
 install:
   - pip install pep8 codecov
