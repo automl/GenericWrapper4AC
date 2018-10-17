@@ -4,6 +4,10 @@ The generic wrapper is a base class to easily implement your own interface betwe
 
 The generic wrapper is developed and maintained by members of the [ML4AAD](http://www.ml4aad.org) Group at the University of Freiburg and the [Beta Lab](http://www.cs.ubc.ca/labs/beta/) of the university of British Columbia. 
 
+Status for master branch: [![Build Status](https://travis-ci.org/automl/GenericWrapper4AC.svg?branch=master)](https://travis-ci.org/automl/GenericWrapper4AC)
+
+Status for dev branch: [![Build Status](https://travis-ci.org/automl/GenericWrapper4AC.svg?branch=dev)](https://travis-ci.org/automl/GenericWrapper4AC)
+
 ## INSTALLATION
 
 We provide a `setup.py` script which can be used to install generic wrapper as a package
