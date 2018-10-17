@@ -55,6 +55,16 @@ Since we use the `runsolver` to limit resources, the generic wrapper can only be
 Please see `./examples/` for some examples with black box functions (no problem instances included) and examples of algorithms with problem instances (i.e., SAT solving).
 Each example comes with its own README with further details.
 
+## Troubleshooting
+
+### Runsolver
+The current version of the GenericWrapper4AC uses the runsolver version 3.4.0. 
+We provide a statically compiled binary. However, under certain circumstances (special kernels and so on), this static binary of the runsolver can fail.
+The setup script should check whether the runsolver can be at least called successfully.
+We recommend to also run the unit tests to verify that the runsolver is working properly.
+If there are any issues with the runsolver, we recommend to first recompile the runsolver (see `runsolver/runsolver-3.4.0/src`).
+If there are even further issues, please check whether a new version of the runsolver is available: `http://www.cril.univ-artois.fr/~roussel/runsolver/`.
+
 ## License
 
 The generic wrapper base class is published under a BSD license -- please see LICENSE for more details.
