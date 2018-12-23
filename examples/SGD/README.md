@@ -23,7 +23,5 @@ which is translated to
 
 `python examples/SGD/sgd_ta.py train random_state 9 learning_rate optimal eta0 0.0 loss hinge penalty l2 alpha 0.0001 n_iter 2`
 
-Please note that in contrast to the `BlackBoxPython` example, the resources of the SGD script is indeed limited with the runsolver (here 5 CPU seconds.)
-
 
   
