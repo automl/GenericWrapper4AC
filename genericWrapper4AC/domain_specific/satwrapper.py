@@ -114,7 +114,7 @@ class SatWrapper(AbstractWrapper):
                 resultMap['status'] = 'TIMEOUT'
             elif not self._verify_SAT(model, filepointer):
                 # fix: race condition between SIGTERM of runsolver and print of solution
-                if self._ta_status == "TIMEOUT":
+                if self.data.status == "TIMEOUT":
                     resultMap['status'] = 'TIMEOUT'
                     resultMap['misc'] = 'print of solution was probably incomplete because of runsolver SIGTERM/SIGKILL'
                 else:
