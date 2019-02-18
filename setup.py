@@ -4,6 +4,7 @@ import subprocess
 import sys
 import traceback
 import setuptools
+from subprocess import Popen
 from setuptools.command.install import install
 
 RUNSOLVER_LOCATION = os.path.join(os.path.dirname(__file__), 'runsolver',
@@ -17,12 +18,12 @@ class InstallRunsolver(install):
 
     def run(self):
         # Build the runsolver
-        sys.stdout.write('Building runsolver\n')
-        cur_pwd = os.getcwd()
+        #sys.stdout.write('Building runsolver\n')
+        #cur_pwd = os.getcwd()
 
-        os.chdir(RUNSOLVER_LOCATION)
-        subprocess.check_call('make')
-        os.chdir(cur_pwd)
+        #os.chdir(RUNSOLVER_LOCATION)
+        #subprocess.check_call('make')
+        #os.chdir(cur_pwd)
 
         # Create a fresh binaries directory
         try:
@@ -49,6 +50,12 @@ class InstallRunsolver(install):
 
         #install.do_egg_install(self)
         install.run(self)
+
+        sys.stdout.write('Testing runsolver\n')
+        p = Popen("%s --version" %(os.path.join(BINARIES_DIRECTORY, 'runsolver')), shell=True)
+        p.communicate()
+        if p.returncode != 0:
+            raise Exception("runsolver was not properly installed. Please check the README for troubleshooting.")
 
         try:
             shutil.rmtree(BINARIES_DIRECTORY)
