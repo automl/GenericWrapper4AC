@@ -173,10 +173,9 @@ class AbstractWrapper(object):
             tmp_dir = tmp_dir
 
         if not os.path.isdir(tmp_dir):
-            self._ta_status = "ABORT"
-            self._ta_misc = "temp directory is missing - should have been at %s." % (
-                args.tmp_dir)
-            self._exit_code = 1
+            self.data.status = "ABORT"
+            self.data.additional = "temp directory is missing - should have been at %s." % (args.tmp_dir)
+            self.data.exit_code = 1
             sys.exit(1)
 
         # create tmp dir for target algorithm files
@@ -220,8 +219,8 @@ class AbstractWrapper(object):
             if io.stdout:
                 io.stdout.flush()
         except OSError:
-            self._ta_status = "ABORT"
-            self._ta_misc = "execution failed: %s" % (
+            self.data.status = "ABORT"
+            self.data.additional = "execution failed: %s" % (
                 " ".join(map(str, runsolver_cmd)))
             self._exit_code = 1
             sys.exit(1)
@@ -357,7 +356,7 @@ class AbstractWrapper(object):
                 os.remove(self._solver_file.name)
 
         except (OSError, KeyboardInterrupt, SystemExit):
-            self.data.additional = "problems removing temporary files during cleanup."
+            self.data.additional = "problems removing temporary cd files during cleanup."
         except AttributeError:
             pass  # in internal mode, these files are not generated
 
