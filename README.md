@@ -81,3 +81,18 @@ Please note that not all code provided in the examples are under a BSD license -
   * Katharina Eggensperger
   * Chris Fawcett
   * Frank Hutter
+
+## Reference
+
+If you use our generic wrapper in an academic context, please consider to cite our paper:
+
+```
+@article{eggensperger-jair19a,
+  author  = {K. Eggensperger and M. Lindauer and F. Hutter},
+  title   = {Pitfalls and Best Practices in Algorithm Configuration},
+  journal = {Journal of Artificial Intelligence Research (JAIR)},
+  year    = {2019},
+  volume  = {64},
+  pages   = {861-894}
+}
+```
