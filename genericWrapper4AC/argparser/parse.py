@@ -32,7 +32,10 @@ def get_parser():
                         default=3072, type=int, help="memory limit in MB")
     parser.add_argument("--max_quality", dest="max_quality", default=None,
                         help="maximal quality of unsuccessful runs with timeouts or crashes")
-    # deactive -h such that 'h' can be a parameter of the target algorithm
+    parser.add_argument("--overwrite_cost_runtime", dest="overwrite_cost_runtime", default=False,
+                        action="store_true",
+                        help="overwrite cost field with runtime field")
+    # deactivate -h such that 'h' can be a parameter of the target algorithm
     parser.add_argument('--help', action='help', default=SUPPRESS,
                         help='Show this help message and exit.')
 

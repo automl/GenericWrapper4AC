@@ -76,7 +76,7 @@ class AbstractWrapper(object):
         self.parser = get_parser()
         self.args = None
 
-    def main(self, exit:bool=True):
+    def main(self, exit: bool = True):
         '''
             main method of the generic wrapper
             1. parses cmd arguments; 
@@ -133,7 +133,7 @@ class AbstractWrapper(object):
                 self.data.time = resultMap['runtime']
             if 'quality' in resultMap:
                 self.data.cost = resultMap['quality']
-            if 'cost' in resultMap: # overrides quality
+            if 'cost' in resultMap:  # overrides quality
                 self.data.cost = resultMap['cost']
             elif 'misc' in resultMap:
                 self.data.additional += "; " + resultMap['misc']
@@ -141,7 +141,7 @@ class AbstractWrapper(object):
             # if quality is still set to 2**32 - 1 and we use the new format,
             # overwrite quality with runtime, since irace only looks at the
             # cost field
-            if self.data.new_format and self.data.cost == 2**32 - 1:
+            if self.data.new_format and self.data.cost == 2 ** 32 - 1:
                 self.data.cost = self.data.time
 
             sys.exit()
@@ -202,7 +202,7 @@ class AbstractWrapper(object):
 
         runsolver_cmd = [self.data.runsolver, "-M", self.data.mem_limit, "-C", self.data.cutoff,
                          "-w", "\"%s\"" % (self._watcher_file.name),
-                         "-o",  "\"%s\"" % (self._solver_file.name)]
+                         "-o", "\"%s\"" % (self._solver_file.name)]
 
         runsolver_cmd = " ".join(map(str, runsolver_cmd)) + " " + target_cmd
         # for debugging
@@ -283,6 +283,9 @@ class AbstractWrapper(object):
 
         # ensure a minimal runtime of 0.0005
         self.data.time = max(0.0005, self.data.time)
+
+        if self.args.overwrite_cost_runtime:
+            self.data.cost = self.data.time
 
         if self.data.new_format:
             aclib2_out_dict = {"status": str(self.data.status),
