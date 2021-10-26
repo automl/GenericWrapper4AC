@@ -1,9 +1,13 @@
+import tempfile
 import unittest
 import sys
 import os
+import copy
 
 from examples.MiniSAT.MiniSATWrapper import MiniSATWrapper
 from examples.SGD.SGDWrapper import SGDWrapper
+from examples.dummy_wrapper.dummy_wrapper import DummyWrapper
+from genericWrapper4AC.data.data import Data
 
 
 class TestCalls(unittest.TestCase):
@@ -86,3 +90,40 @@ class TestCalls(unittest.TestCase):
         self.assertNotEqual(wrapper.data.cost, wrapper.data.time)
         self.assertEqual(wrapper.data.seed, 9)
         self.assertTrue(wrapper.data.new_format)
+
+    def test_dummy(self):
+        wrapper = DummyWrapper()
+
+        d = self.get_data(status="SUCCESS", exit_code=0, new_format=False)
+
+        sys.argv = f"examples/dummy_wrapper/dummy_wrapper.py {d.instance} {d.specifics} {d.cutoff} 0 {d.seed} -cost {d.cost} -runtime {d.time}"
+        sys.argv += " --runsolver-path " + self.runsolver
+        sys.argv = sys.argv.split(" ")
+
+        wrapper.main(exit=False)
+
+        self.assert_equal_data(d, wrapper.data)
+
+    @staticmethod
+    def get_data(**kwargs):
+        d = Data()
+        d.instance = "cost+time"
+        d.specifics = "abc"
+        d.cutoff = 10
+        d.seed = 0
+        d.cost = 1.1
+        d.time = 1.2
+        for k, v in kwargs.items():
+            setattr(d, k, v)
+        return d
+
+    def assert_equal_data(self, expected, actual):
+        self.assertEqual(expected.status, actual.status)
+        self.assertEqual(expected.exit_code, actual.exit_code)
+        self.assertEqual(expected.instance, actual.instance)
+        self.assertEqual(expected.specifics, actual.specifics)
+        self.assertEqual(expected.cutoff, actual.cutoff)
+        self.assertEqual(expected.seed, actual.seed)
+        self.assertEqual(expected.cost, actual.cost)
+        self.assertEqual(expected.time, actual.time)
+        self.assertEqual(expected.new_format, actual.new_format)
