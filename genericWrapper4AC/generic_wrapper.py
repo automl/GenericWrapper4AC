@@ -20,6 +20,7 @@ import logging
 import re
 import traceback
 import tempfile
+import configparser
 
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
@@ -55,6 +56,7 @@ class AbstractWrapper(object):
 
         self.RESULT_MAPPING = {"SAT": "SUCCESS",
                                "UNSAT": "SUCCESS"}
+        self._values_file = None
         self._watcher_file = None
         self._solver_file = None
 
@@ -195,12 +197,15 @@ class AbstractWrapper(object):
                 
         '''
         random_id = random.randint(0, 1000000)
+        self._values_file = NamedTemporaryFile(
+            suffix=".ini", prefix="values-%d-" % (random_id), dir=self.data.tmp_dir, delete=False)
         self._watcher_file = NamedTemporaryFile(
             suffix=".log", prefix="watcher-%d-" % (random_id), dir=self.data.tmp_dir, delete=False)
         self._solver_file = NamedTemporaryFile(
             suffix=".log", prefix="solver-%d-" % (random_id), dir=self.data.tmp_dir, delete=False)
 
         runsolver_cmd = [self.data.runsolver, "-M", self.data.mem_limit, "-C", self.data.cutoff,
+                         "-v", "\"%s\"" % (self._values_file.name),
                          "-w", "\"%s\"" % (self._watcher_file.name),
                          "-o", "\"%s\"" % (self._solver_file.name)]
 
@@ -226,16 +231,34 @@ class AbstractWrapper(object):
             sys.exit(1)
         self._solver_file.seek(0)
         self._watcher_file.seek(0)
+        self._values_file.seek(0)
 
     def float_regex(self):
         return '[+-]?\d+(?:\.\d+)?(?:[eE][+-]\d+)?'
 
     def read_runsolver_output(self):
         '''
-            reads self._watcher_file, 
+            reads self._values_file and self._watcher_file, 
             extracts runtime
             and returns if memout or timeout found
         '''
+        self.logger.debug("Reading runsolver output from %s" %
+                          (self._values_file.name))
+        data = str(self._values_file.read().decode("utf8"))
+        data = "[DEFAULT]\n" + data
+        config = configparser.ConfigParser(interpolation=None)
+        config.read_string(data)
+        config = config['DEFAULT']
+
+        if runsolver_str_to_bool(config['TIMEOUT']):
+            self.data.status = "TIMEOUT"
+
+        if runsolver_str_to_bool(config['MEMOUT']):
+            self.data.status = "TIMEOUT"
+            self.data.additional += " memory limit was exceeded"
+
+        self.data.time = float(config['CPUTIME'])
+
         self.logger.debug("Reading runsolver output from %s" %
                           (self._watcher_file.name))
         try:
@@ -244,29 +267,7 @@ class AbstractWrapper(object):
             # due to the common, rare runsolver bug,
             # the watcher file can be corrupted and can failed to be read
             self.data.exit_code = 0
-            self.logger.warn(
-                "Failed to read runsolver's watcher file---trust own wc-time measurment")
             return
-
-        if (re.search('runsolver_max_cpu_time_exceeded', data) or re.search('Maximum CPU time exceeded', data)):
-            self.data.status = "TIMEOUT"
-
-        if (re.search('runsolver_max_memory_limit_exceeded', data) or re.search('Maximum VSize exceeded', data)):
-            self.data.status = "TIMEOUT"
-            self.data.additional += " memory limit was exceeded"
-
-        cpu_pattern1 = re.compile('^runsolver_cputime: (%s)' % (
-            self.float_regex()), re.MULTILINE)
-        cpu_match1 = re.search(cpu_pattern1, data)
-
-        cpu_pattern2 = re.compile('^CPU time \\(s\\): (%s)' % (
-            self.float_regex()), re.MULTILINE)
-        cpu_match2 = re.search(cpu_pattern2, data)
-
-        if (cpu_match1):
-            self.data.time = float(cpu_match1.group(1))
-        if (cpu_match2):
-            self.data.time = float(cpu_match2.group(1))
 
         exitcode_pattern = re.compile('Child status: ([0-9]+)')
         exitcode_match = re.search(exitcode_pattern, data)
@@ -340,21 +341,26 @@ class AbstractWrapper(object):
                 self.data.additional += '; Problem with run. Exit code was N/A.'
 
             if (self._watcher_file and self._solver_file):
-                self.data.additional += '; Preserving runsolver output at %s - preserving target algorithm output at %s' % (
-                    self._watcher_file.name or "<none>", self._solver_file.name or "<none>")
+                self.data.additional += '; Preserving runsolver output at %s and %s - preserving target algorithm output at %s' % (
+                    self._values_file.name or "<none>", self._watcher_file.name or "<none>", self._solver_file.name or "<none>")
 
         try:
+            if self._values_file:
+                self._values_file.close()
             if self._watcher_file:
                 self._watcher_file.close()
             if self._solver_file:
                 self._solver_file.close()
 
             if self.data.status not in ["ABORT", "CRASHED"]:
+                os.remove(self._values_file.name)
                 os.remove(self._watcher_file.name)
                 os.remove(self._solver_file.name)
             elif self._use_tmpdir:
+                shutil.copy(self._values_file.name, ".")
                 shutil.copy(self._watcher_file.name, ".")
                 shutil.copy(self._solver_file.name, ".")
+                os.remove(self._values_file.name)
                 os.remove(self._watcher_file.name)
                 os.remove(self._solver_file.name)
 
@@ -395,3 +401,7 @@ class AbstractWrapper(object):
             ATTENTION: The return values will overwrite the measured results of the runsolver (if runsolver was used). 
         '''
         raise NotImplementedError()
+
+
+def runsolver_str_to_bool(s):
+    return {'false': False, 'true': True}[s]
