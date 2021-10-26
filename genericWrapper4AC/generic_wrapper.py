@@ -174,7 +174,7 @@ class AbstractWrapper(object):
 
         if not os.path.isdir(tmp_dir):
             self.data.status = "ABORT"
-            self.data.additional = "temp directory is missing - should have been at %s." % (args.tmp_dir)
+            self.data.additional = "temp directory is missing - should have been at %s." % (tmp_dir)
             self.data.exit_code = 1
             sys.exit(1)
 
