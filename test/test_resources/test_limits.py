@@ -30,8 +30,10 @@ class TestResourceLimits(unittest.TestCase):
 
         wrapper.read_runsolver_output()
 
+        wrapper._values_file.close()
         wrapper._watcher_file.close()
         wrapper._solver_file.close()
+        os.remove(wrapper._values_file.name)
         os.remove(wrapper._watcher_file.name)
         os.remove(wrapper._solver_file.name)
 
@@ -60,8 +62,10 @@ class TestResourceLimits(unittest.TestCase):
         self.assertNotEqual(wrapper.data.additional,
                             " memory limit was exceeded")
 
+        wrapper._values_file.close()
         wrapper._watcher_file.close()
         wrapper._solver_file.close()
+        os.remove(wrapper._values_file.name)
         os.remove(wrapper._watcher_file.name)
         os.remove(wrapper._solver_file.name)
 
@@ -89,7 +93,9 @@ class TestResourceLimits(unittest.TestCase):
         self.assertNotEqual(wrapper.data.additional,
                             " memory limit was exceeded")
 
+        wrapper._values_file.close()
         wrapper._watcher_file.close()
         wrapper._solver_file.close()
+        os.remove(wrapper._values_file.name)
         os.remove(wrapper._watcher_file.name)
         os.remove(wrapper._solver_file.name)
