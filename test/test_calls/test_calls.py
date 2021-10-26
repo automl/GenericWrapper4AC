@@ -104,6 +104,25 @@ class TestCalls(unittest.TestCase):
 
         self.assert_equal_data(d, wrapper.data)
 
+    def test_tmp_dir(self):
+        wrapper = DummyWrapper()
+
+        d = self.get_data()
+
+        with tempfile.TemporaryDirectory(prefix="GenericWrapper4AC_test_") as tmp_dir:
+            missing_dir_path = os.path.join(tmp_dir, "default")
+            sys.argv = f"examples/dummy_wrapper/dummy_wrapper.py --temp-file-dir {missing_dir_path} {d.instance} {d.specifics} {d.cutoff} 0 {d.seed} -cost {d.cost} -runtime {d.time}"
+            sys.argv += " --runsolver-path " + self.runsolver
+            sys.argv = sys.argv.split(" ")
+
+            wrapper.main(exit=False)
+
+        d.status = "ABORT"
+        d.exit_code = 1
+        d.time = d.cutoff
+        d.cost = Data().cost
+        self.assert_equal_data(d, wrapper.data)
+
     @staticmethod
     def get_data(**kwargs):
         d = Data()
