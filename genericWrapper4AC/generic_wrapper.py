@@ -97,20 +97,21 @@ class AbstractWrapper(object):
 
         # returns genericWrapper4AC.data.data.Data
         self.data, self.args = parse(cmd_arguments=sys.argv, parser=self.parser)
-        self.data.tmp_dir, algo_temp_dir = self.set_tmpdir(tmp_dir=self.data.tmp_dir)
-
-        # because of legacy reasons,
-        # we still pass a dictionary to get_command_line_args
-        runargs = {
-            "instance": self.data.instance,
-            "specifics": self.data.specifics,
-            "cutoff": self.data.cutoff,
-            "runlength": self.data.runlength,
-            "seed": self.data.seed,
-            "tmp": algo_temp_dir.name
-        }
 
         try:
+            self.data.tmp_dir, algo_temp_dir = self.set_tmpdir(tmp_dir=self.data.tmp_dir)
+
+            # because of legacy reasons,
+            # we still pass a dictionary to get_command_line_args
+            runargs = {
+                "instance": self.data.instance,
+                "specifics": self.data.specifics,
+                "cutoff": self.data.cutoff,
+                "runlength": self.data.runlength,
+                "seed": self.data.seed,
+                "tmp": algo_temp_dir.name
+            }
+
             target_cmd = self.get_command_line_args(
                 runargs=runargs, config=self.data.config)
 
